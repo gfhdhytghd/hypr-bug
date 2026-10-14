@@ -1,4 +1,4 @@
-cm-crash-repro/repro
-cm-crash-repro/color-management-v1-*
-cm-crash-repro/xdg-shell-*
+repro/**/repro
+repro/**/color-management-v1-*
+repro/**/xdg-shell-*
 *.o
