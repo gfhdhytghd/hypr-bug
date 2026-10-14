@@ -1,67 +1,45 @@
-# hypr-bug — Hyprland wp_color_management v1 crash reproductions & audit
+# hypr-bug
 
-Audit artifacts for the Hyprland branch `cm/tonemap-ref-scaling`
-(tip `30e438818`, based on main `6cc0822e2`): a compilable reproduction client
-for **two Critical SIGSEGV bugs** in the compositor's `color-management-v1`
-protocol handling, plus the full 29-item audit verification report.
+An agent-maintained issue list for Hyprland, covering the areas I am
+interested in. Each entry is a self-contained dossier: audit report,
+verification status per finding, and — where applicable — a compilable
+reproduction client.
 
-## Layout
+Everything here was produced by AI agents under my supervision: static review
+against the relevant specs (Wayland protocol XML, color standards), live
+verification in nested/headless sessions, and code reading at pinned commits.
+**Treat every claim as machine-generated until upstream confirms it** — each
+dossier states its own verification level per finding.
 
-- `cm-crash-repro/` — reproduction client (`build.sh` produces `./repro`)
-- `reports/hyprland-hdr-cm-crash-reports.md` — crash deep-dives + full verification table
+## Index
 
-## The two guaranteed crashes (any plain client request sequence takes down the compositor)
+| # | Area | Summary | Status | Files |
+|---|------|---------|--------|-------|
+| 1 | HDR / color management (`cm/tonemap-ref-scaling`) | 29-item audit of `color-management-v1` handling; includes 2 Critical always-crash protocol bugs with repro clients | verified (nested-session crashes observed); fix not yet proposed upstream | [`issues/2026-10-color-management-crashes.md`](issues/2026-10-color-management-crashes.md), [`repro/cm-crash-repro/`](repro/cm-crash-repro/) |
 
-1. **feedback never becomes inert when its wl_surface dies**
-   Client creates a `wp_color_management_surface_feedback_v1`, then destroys
-   its own `wl_surface`. On the next output image-description change,
-   `onPreferredChanged` dereferences the expired `WP<CWLSurfaceResource>`
-   with no guard (`ColorManagement.cpp:460`) → main-thread SIGSEGV.
-   (Spec: XML L795-799 — feedback must become inert when the surface is destroyed.)
-2. **A failed (not-ready) wp_image_description_v1 remains usable**
-   After the output is removed, `get_image_description` returns an object that
-   got `failed`, yet it is never removed from the protocol list, carries an
-   empty `m_settings` weak pointer, and no `not_ready` error is ever posted:
-   - A: calling `get_information` on it → null deref at `ColorManagement.cpp:767`
-     crashes the main thread;
-   - B: passing it to `set_image_description` poisons the surface; the render
-     loop's `isHDR()` (`Renderer.cpp:2571` → `ColorManagement.cpp:378`)
-     crashes the render thread.
+*(To be continued as more areas get audited.)*
 
-## Usage
+## Using the reproductions
 
-⚠️ Crashes the target hyprland session (unsaved data is lost). Use a nested /
-test session only. The compositor needs `render:cm_enabled=1` (default-on in
-this branch).
+Each `repro/<name>/` directory is standalone: `bash build.sh` generates the
+needed Wayland protocol stubs and compiles the client. Read the linked issue
+dossier first — it describes the trigger sequences and the expected crash
+signature.
 
-```bash
-cd cm-crash-repro && bash build.sh
+⚠️ Reproductions crash a vulnerable session with unsaved data. Run them
+against nested/headless instances only, and keep this repository private
+until the corresponding fixes are merged upstream.
 
-# crash #1
-./repro feedback
-#   in another terminal: hyprctl keyword monitor <output>,add,cm,hdr  → Enter
+## Methodology notes
 
-# crash #2A (main thread)
-hyprctl output create headless VICTIM
-./repro getinfo VICTIM
-#   in another terminal: hyprctl output destroy VICTIM → Enter
+- Findings are pinned to an exact branch + commit; line numbers refer to that tree.
+- Severity was assigned by reachability (any client → whole compositor = Critical).
+- Where a claim could not be independently confirmed, it is marked as such in the dossier.
 
-# crash #2B (render thread)
-hyprctl output create headless VICTIM
-./repro poison VICTIM
-#   in another terminal: hyprctl output destroy VICTIM → Enter
-```
+## Disclosure
 
-Success criteria: the hyprland process dies with `onPreferredChanged` (#1) or
-`CColorManagementImageDescriptionInfo` / `isHDR` (#2) at the top of the crash
-stack. After the fixes (guards listed in section 6 of each report), the same
-sequences must produce `inert` / `not_ready` / `image_description` protocol
-errors instead of crashes.
-
-## Disclosure note
-
-Findings come from static review against the protocol spec plus live
-verification in nested sessions (see `reports/`). Keep this repo private until
-the fixes are merged. If reporting upstream, follow Hyprland's
+When reporting upstream, follow Hyprland's
 [AI usage policy](https://github.com/hyprwm/.github/blob/main/policies/AI_USAGE.md)
-and issue guidelines, and interact with the developers yourself.
+and the [issue guidelines](https://wiki.hypr.land/contributing-and-debugging/issue-guidelines/):
+all interaction with the development team must be done by a human, not by an
+agent.
