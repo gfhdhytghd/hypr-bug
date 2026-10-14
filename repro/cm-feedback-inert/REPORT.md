@@ -8,7 +8,7 @@
 
 `CColorManagementFeedbackSurface` holds a `WP<CWLSurfaceResource> m_surface` (src/protocols/ColorManagement.hpp:84). The spec requires the object to become inert once its associated wl_surface is destroyed, but the implementation never removes or inerts a feedback object when its surface dies: it stays in `PROTO::colorManagement->m_feedbackSurfaces`, and is only removed when the client explicitly destroys the feedback resource itself (src/protocols/ColorManagement.cpp:393-400 → destroyResource :921-923). Any later output-description change is broadcast to every feedback object, and `onPreferredChanged()` dereferences `m_surface` at :460 with no `expired()` guard; hyprutils `WeakPtr.hpp:221-226` makes `get()`/`operator->` return nullptr for an expired WP → SIGSEGV.
 
-**Severity: Critical.** A single trivial client request sequence (create feedback → destroy your own surface) takes down the whole compositor on the next config/output change (remote DoS).
+**Severity: High.** A single trivial client request sequence (create feedback → destroy your own surface) takes down the whole compositor on the next config/output change.
 
 ### 2. Object lifetimes involved
 

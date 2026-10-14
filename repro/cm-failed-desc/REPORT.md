@@ -15,7 +15,7 @@
 
 Consequences: after failed, `get_information` → `m_settings->value()` at :767 is a null deref on the main thread (crash); or the failed object is attached to a surface via `set_image_description` → :323-324 copies the empty WP and sets `hasImageDescription=true` → the render loop's `isHDR()`/`imageDescription()` (:378/:347, via Renderer.cpp:2571/2581, Monitor.cpp:2016-2017/2402) null-derefs on the render thread (whole machine hangs).
 
-**Severity: Critical.** A single malicious or buggy client connection reliably crashes the compositor.
+**Severity: High.** A single malicious or buggy client connection reliably crashes the compositor.
 
 ### 2. Object lifetimes involved
 

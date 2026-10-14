@@ -15,7 +15,7 @@ dossier states its own verification level per finding.
 
 | # | Area | Summary | Status | Reports | Repro clients |
 |---|------|---------|--------|---------|---------------|
-| 1 | HDR / color management (`cm/tonemap-ref-scaling`) | 29-item audit of `color-management-v1` handling; 2 Critical always-crash protocol bugs | verified (nested-session crashes observed); no upstream fix yet | [overall table](reports/color-management-verification.md) | [cm-feedback-inert](repro/cm-feedback-inert/) · [cm-failed-desc](repro/cm-failed-desc/) |
+| 1 | HDR / color management (`cm/tonemap-ref-scaling`) | 29-item audit of `color-management-v1` handling; 2 High always-crash protocol bugs | verified (nested-session crashes observed); no upstream fix yet | [overall table](reports/color-management-verification.md) | [cm-feedback-inert](repro/cm-feedback-inert/) · [cm-failed-desc](repro/cm-failed-desc/) |
 
 Raw agent output awaiting triage (pre-verification snapshots) is parked in
 [`pending-evaluation/`](pending-evaluation/).
@@ -36,7 +36,7 @@ until the corresponding fixes are merged upstream.
 ## Methodology notes
 
 - Findings are pinned to an exact branch + commit; line numbers refer to that tree.
-- Severity was assigned by reachability (any client → whole compositor = Critical).
+- Severity was assigned by reachability (any client → whole compositor = High).
 - Where a claim could not be independently confirmed, it is marked as such in the dossier.
 
 ## Disclosure
