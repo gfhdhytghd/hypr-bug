@@ -1,4 +1,6 @@
 repro/**/repro
-repro/**/color-management-v1-*
-repro/**/xdg-shell-*
+repro/**/*.so
+repro/*/[xc]*-*-protocol.*
+repro/*/color-management-v1-client-protocol.h
+repro/*/xdg-shell-client-protocol.h
 *.o
