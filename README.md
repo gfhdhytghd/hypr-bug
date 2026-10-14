@@ -17,6 +17,9 @@ dossier states its own verification level per finding.
 |---|------|---------|--------|---------|---------------|
 | 1 | HDR / color management (`cm/tonemap-ref-scaling`) | 29-item audit of `color-management-v1` handling; 2 Critical always-crash protocol bugs | verified (nested-session crashes observed); no upstream fix yet | [overall table](reports/color-management-verification.md) | [cm-feedback-inert](repro/cm-feedback-inert/) · [cm-failed-desc](repro/cm-failed-desc/) |
 
+Raw agent output awaiting triage (pre-verification snapshots) is parked in
+[`pending-evaluation/`](pending-evaluation/).
+
 *(To be continued as more areas get audited.)*
 
 ## Using the reproductions
