@@ -13,18 +13,18 @@ dossier states its own verification level per finding.
 
 ## Index
 
-| # | Area | Summary | Status | Files |
-|---|------|---------|--------|-------|
-| 1 | HDR / color management (`cm/tonemap-ref-scaling`) | 29-item audit of `color-management-v1` handling; includes 2 Critical always-crash protocol bugs with repro clients | verified (nested-session crashes observed); fix not yet proposed upstream | [`issues/2026-10-color-management-crashes.md`](issues/2026-10-color-management-crashes.md), [`repro/cm-crash-repro/`](repro/cm-crash-repro/) |
+| # | Area | Summary | Status | Reports | Repro clients |
+|---|------|---------|--------|---------|---------------|
+| 1 | HDR / color management (`cm/tonemap-ref-scaling`) | 29-item audit of `color-management-v1` handling; 2 Critical always-crash protocol bugs | verified (nested-session crashes observed); no upstream fix yet | [overall table](reports/color-management-verification.md) | [cm-feedback-inert](repro/cm-feedback-inert/) · [cm-failed-desc](repro/cm-failed-desc/) |
 
 *(To be continued as more areas get audited.)*
 
 ## Using the reproductions
 
-Each `repro/<name>/` directory is standalone: `bash build.sh` generates the
-needed Wayland protocol stubs and compiles the client. Read the linked issue
-dossier first — it describes the trigger sequences and the expected crash
-signature.
+Each `repro/<name>/` directory is one bug: a standalone client
+(`bash build.sh`) plus its `REPORT.md` deep-dive (trigger analysis, spec
+citations, fix proposal). The overall audit status for the whole area lives in
+`reports/`.
 
 ⚠️ Reproductions crash a vulnerable session with unsaved data. Run them
 against nested/headless instances only, and keep this repository private
