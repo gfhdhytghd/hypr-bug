@@ -1,6 +1,6 @@
 # Bug report — failed (not-ready) wp_image_description_v1 objects remain usable
 
-(Extract from the color-management audit; see the overall verification table at [`../../reports/color-management-verification.md`](../../reports/color-management-verification.md).)
+(Extract from the color-management audit; see the overall verification table at [`../../_evidence/color-management-verification.md`](../../_evidence/color-management-verification.md).)
 
 ## Report 2: a failed (not-ready) wp_image_description_v1 is still usable via get_information / set_image_description → empty m_settings WP dereferenced
 

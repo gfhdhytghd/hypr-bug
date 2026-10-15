@@ -7,8 +7,8 @@
 > This is the original agent-generated audit list, kept as-is for later
 > triage. Per-finding verification verdicts against the current tip
 > (`30e438818`) — including three partial-true corrections and line-number
-> fixes — are in [`../reports/color-management-verification.md`](../reports/color-management-verification.md);
-> the two crash deep-dives live with their clients under `repro/`.
+> fixes — are in [`../agent-report/color-management/_evidence/color-management-verification.md`](../agent-report/color-management/_evidence/color-management-verification.md);
+> the two crash deep-dives live with their clients under `agent-report/color-management/_assets/`.
 
 Verification levels used below:
 - **live-tested**: actually run in a nested session and observed

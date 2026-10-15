@@ -9,6 +9,8 @@ Bounties are currently available **only for color-management (CM) issues**. You 
 
 Please quote each task separately. **Payment is in cryptocurrency.**
 
+**Claim the issue and agree the price with me before beginning public work** (including publishing a report, reproduction, patch, or upstream PR). Bounty payment requires both a prior claim and an agreed price, followed by completion of the agreed task. Work started publicly before claiming, or without an agreed price, is not eligible for payment. Record the claimant in **Claim status** and the agreed bounty and scope in **Notes**.
+
 ## About
 
 An agent-maintained issue list for Hyprland, covering the areas I am
@@ -16,20 +18,21 @@ interested in. Each entry is a self-contained dossier: audit report,
 verification status per finding, and — where applicable — a compilable
 reproduction client.
 
-Everything here was produced by AI agents under my supervision: static review
+The existing audit material was produced by AI agents under my supervision: static review
 against the relevant specs (Wayland protocol XML, color standards), live
 verification in nested/headless sessions, and code reading at pinned commits.
-**Treat every claim as machine-generated until upstream confirms it** — each
-dossier states its own verification level per finding.
+**Treat agent-only claims as machine-generated** — each dossier states its own
+verification level. Human-reviewed and tested submissions are recorded separately
+under `human-confirmed/`.
 
 ## Index
 
 | # | Area | Summary | Status | Reports | Repro clients |
 |---|------|---------|--------|---------|---------------|
-| 1 | HDR / color management (`cm/tonemap-ref-scaling`) | 29-item audit of `color-management-v1` handling; 2 High always-crash protocol bugs | verified (nested-session crashes observed); no upstream fix yet | [overall table](reports/color-management-verification.md) | [cm-feedback-inert](repro/cm-feedback-inert/) · [cm-failed-desc](repro/cm-failed-desc/) |
+| 1 | HDR / color management (`cm/tonemap-ref-scaling`) | 29-item audit of `color-management-v1` handling; 2 High always-crash protocol bugs | verified (nested-session crashes observed); no upstream fix yet | [overall table](agent-report/color-management/_evidence/color-management-verification.md) | [cm-feedback-inert](agent-report/color-management/_assets/cm-feedback-inert/) · [cm-failed-desc](agent-report/color-management/_assets/cm-failed-desc/) |
 | 2 | Full-codebase sweep @ `397cb0efb` — 15 areas: fork CM/HDR, IPC/hyprctl, hyprpm, config/Lua/ICC, XWayland ×2, xdg/layer-shell, misc protocols, seat/clipboard/DnD, desktop lifecycle, resource loading, boot/crash chain, input/keybinds, permission dialogs, event-loop timers | **135 findings / 15 dossiers**; top: virtual-keyboard → exec-keybind **RCE from any Wayland client** (F-INP-01), clipboard/DnD missing serial+focus checks, X11 socket 0666 w/o `-auth` (cross-user, pending live test), SIGBUS crashes (shm/vkbd keymap), IPC Lua eval/dispatch injection, permission-system fail-open paths | **static analysis only — none reproduced yet** | [batch index](pending-evaluation/2026-10-full-audit/README.md) | — |
-| 3 | Community HDR/CM validation @ official `e2ad066c9` vs local fork `3d52e94fd` | **3 confirmed mechanisms: 1 new CPU-copy cursor defect, 2 extensions of existing findings**, plus addendum HDR-COM-04 (SDR presets advertise EDID HDR headroom, PR #16525); 2 implementation limitations recorded separately; 184 community records triaged | source-confirmed; 2 shader counterexamples executed in isolated EGL; physical HDR acceptance open; fork already contains corrective source for 2 findings | [validation and exclusions](reports/community-hdr-validation.md) · [per-record ledger](reports/community-hdr-triage.json) | [shader numerics](repro/hdr-community-numerics/) |
-| 4 | Side findings while fixing the fork @ official `e2ad066c9` vs fork `bd598253a` | **8 upstream defects + 1 correction**: orphaned-subsurface `get_subsurface` **SIGSEGV from any client** (SIDE-01), wrong top-level/position for subsurface nesting ≥ 3, stale hardware cursor after output CM changes, cursor-surface image description ignored, CPU cursor stride; F-SEAT-11 flip-order correction | SIDE-01..03 executed against upstream `Subcompositor.cpp` (SIGSEGV / wrong values observed); SIDE-04..06 source-confirmed; fork fixes all six | [side findings](reports/fork-fix-side-findings.md) | [subsurface-orphan-parent](repro/subsurface-orphan-parent/) |
+| 3 | Community HDR/CM validation @ official `e2ad066c9` vs local fork `3d52e94fd` | **3 confirmed mechanisms: 1 new CPU-copy cursor defect, 2 extensions of existing findings**, plus addendum HDR-COM-04 (SDR presets advertise EDID HDR headroom, PR #16525); 2 implementation limitations recorded separately; 184 community records triaged | source-confirmed; 2 shader counterexamples executed in isolated EGL; physical HDR acceptance open; fork already contains corrective source for 2 findings | [validation and exclusions](agent-report/color-management/_evidence/community-hdr-validation.md) · [per-record ledger](agent-report/color-management/_evidence/community-hdr-triage.json) | [shader numerics](agent-report/color-management/_assets/hdr-community-numerics/) |
+| 4 | Side findings while fixing the fork @ official `e2ad066c9` vs fork `bd598253a` | **8 upstream defects + 1 correction**: orphaned-subsurface `get_subsurface` **SIGSEGV from any client** (SIDE-01), wrong top-level/position for subsurface nesting ≥ 3, stale hardware cursor after output CM changes, cursor-surface image description ignored, CPU cursor stride; F-SEAT-11 flip-order correction | SIDE-01..03 executed against upstream `Subcompositor.cpp` (SIGSEGV / wrong values observed); SIDE-04..06 source-confirmed; fork fixes all six | [side findings](agent-report/surface-protocols/_evidence/fork-fix-side-findings.md) | [subsurface-orphan-parent](agent-report/surface-protocols/_assets/subsurface-orphan-parent/) |
 
 Raw agent output awaiting triage (pre-verification snapshots) is parked in
 [`pending-evaluation/`](pending-evaluation/).
@@ -42,7 +45,7 @@ Both confirmation columns support `none` (default / not yet validated), `confirm
 
 `Agent confirmed = confirmed` means the linked report contains independent source/specification, numeric, or runtime confirmation **at its pinned revision**. It does not imply current-version reproduction or physical-display acceptance. A manual `confirmed`, `partially`, or `rejected` requires an explicit human validation record for this tracker; authorship, screenshots, or an agent-run test alone do not set that column, so it currently defaults to `none`.
 
-The original CM list has 29 entries. HDR-COM-02 is folded into CM-18; HDR-COM-03 expands a previously unnumbered minor item. The full-audit entries listed below remain unverified candidates (`none`), including informational/control records; they are not 135 confirmed bugs. Community-only records remain in the [triage ledger](reports/community-hdr-triage.json). The F-CM-01..09 candidates from dossier 01 targeted the fork, which has fixed or rejected all of them; their upstream halves are tracked as SIDE-07 (F-CM-01/07) and SIDE-08 (F-CM-06) (see [`01-fork-cm-hdr.md`](pending-evaluation/2026-10-full-audit/01-fork-cm-hdr.md) for the raw dossier). The SIDE-xx entries are additional upstream defects found while fixing the fork; see the [side-findings report](reports/fork-fix-side-findings.md).
+The original CM list has 29 entries. HDR-COM-02 is folded into CM-18; HDR-COM-03 expands a previously unnumbered minor item. The full-audit entries listed below remain unverified candidates (`none`), including informational/control records; they are not 135 confirmed bugs. Community-only records remain in the [triage ledger](agent-report/color-management/_evidence/community-hdr-triage.json). The F-CM-01..09 candidates from dossier 01 targeted the fork, which has fixed or rejected all of them; their upstream halves are tracked as SIDE-07 (F-CM-01/07) and SIDE-08 (F-CM-06) (see [`01-fork-cm-hdr.md`](pending-evaluation/2026-10-full-audit/01-fork-cm-hdr.md) for the raw dossier). The SIDE-xx entries are additional upstream defects found while fixing the fork; see the [side-findings report](agent-report/surface-protocols/_evidence/fork-fix-side-findings.md).
 
 CM tables also include **Claim status**: `none` means unclaimed; use `claimed (@handle)` to identify the claimant once an issue is claimed.
 
@@ -52,43 +55,43 @@ The **Notes** column records bounty amounts, other details, and the reasons for 
 
 | Issue | Agent confirmed | Manually confirmed | PR status | Claim status | Notes |
 |---|---|---|---|---|---|
-| [CM-01 Feedback survives surface destruction and later crashes the compositor](repro/cm-feedback-inert/REPORT.md) | confirmed | none | none | none |  |
-| [CM-02 Failed image descriptions remain usable and cause null dereferences](repro/cm-failed-desc/REPORT.md) | confirmed | none | none | none |  |
-| [CM-03 Image-description changes are applied before the surface commit](reports/color-management-verification.md) | confirmed | none | none | none |  |
-| [CM-04–11 Protocol validation bundle: PQ min + 10000 rule (04), incomplete Windows scRGB preset luminances (05), incomplete parametric descriptions accepted (06), MaxCLL / MaxFALL not validated (07), invalid mastering-luminance bounds (08), unadvertised transfer functions accepted (09), wrong set_tf_power error code (10), no inert error on inert CM surfaces (11)](reports/color-management-verification.md) | confirmed | none | none | none | Bundled: all eight concern `color-management-v1` request / preset handling (mostly `protocols/ColorManagement.cpp`; 05 also touches the preset definitions) and fit one PR; priced and claimed as one bundle. |
-| [CM-12 ICC description replacement omits change notifications](reports/color-management-verification.md) | confirmed | none | none | none |  |
+| [CM-01 Feedback survives surface destruction and later crashes the compositor](agent-report/color-management/CM-01.md) | confirmed | none | none | none |  |
+| [CM-02 Failed image descriptions remain usable and cause null dereferences](agent-report/color-management/CM-02.md) | confirmed | none | none | none |  |
+| [CM-03 Image-description changes are applied before the surface commit](agent-report/color-management/CM-03.md) | confirmed | none | none | none |  |
+| [CM-04–11 Protocol validation bundle: PQ min + 10000 rule (04), incomplete Windows scRGB preset luminances (05), incomplete parametric descriptions accepted (06), MaxCLL / MaxFALL not validated (07), invalid mastering-luminance bounds (08), unadvertised transfer functions accepted (09), wrong set_tf_power error code (10), no inert error on inert CM surfaces (11)](agent-report/color-management/CM-04-11.md) | confirmed | none | none | none | Bundled: all eight concern `color-management-v1` request / preset handling (mostly `protocols/ColorManagement.cpp`; 05 also touches the preset definitions) and fit one PR; priced and claimed as one bundle. |
+| [CM-12 ICC description replacement omits change notifications](agent-report/color-management/CM-12.md) | confirmed | none | none | none |  |
 
 ### CM — shaders and transfer functions
 
 | Issue | Agent confirmed | Manually confirmed | PR status | Claim status | Notes |
 |---|---|---|---|---|---|
-| [CM-13 BT.1886 uses the inverse BT.709 curve instead of the display EOTF](reports/color-management-verification.md) | confirmed | none | none | none |  |
-| [CM-14 HLG decoding omits the OOTF / system gamma](reports/color-management-verification.md) | confirmed | none | none | none |  |
-| [CM-15 Tonemapping clips negative FP16 wide-gamut components](reports/color-management-verification.md) | confirmed | none | none | none |  |
-| [CM-16 Generic-film primaries are in the wrong channel order](reports/color-management-verification.md) | confirmed | none | none | none |  |
-| [CM-17 CIE XYZ primaries can produce singular conversion matrices](reports/color-management-verification.md) | confirmed | none | none | none |  |
-| [CM-18 Client minimum luminance is ignored; parametric EXT_LINEAR encoding range is ignored](reports/community-hdr-validation.md) | partially | none | none | none | The original blanket claim was too broad: max/reference luminance do affect tonemapping, while client minimum luminance is omitted. The parametric EXT_LINEAR range subcase was independently reproduced (1.624 vs 203 nit). |
+| [CM-13 BT.1886 uses the inverse BT.709 curve instead of the display EOTF](agent-report/color-management/CM-13.md) | confirmed | none | none | none |  |
+| [CM-14 HLG decoding omits the OOTF / system gamma](agent-report/color-management/CM-14.md) | confirmed | none | none | none |  |
+| [CM-15 Tonemapping clips negative FP16 wide-gamut components](agent-report/color-management/CM-15.md) | confirmed | none | none | none |  |
+| [CM-16 Generic-film primaries are in the wrong channel order](agent-report/color-management/CM-16.md) | confirmed | none | none | none |  |
+| [CM-17 CIE XYZ primaries can produce singular conversion matrices](agent-report/color-management/CM-17.md) | confirmed | none | none | none |  |
+| [CM-18 Client minimum luminance is ignored; parametric EXT_LINEAR encoding range is ignored](agent-report/color-management/CM-18.md) | partially | none | none | none | The original blanket claim was too broad: max/reference luminance do affect tonemapping, while client minimum luminance is omitted. The parametric EXT_LINEAR range subcase was independently reproduced (1.624 vs 203 nit). |
 
 ### CM — rendering pipeline
 
 | Issue | Agent confirmed | Manually confirmed | PR status | Claim status | Notes |
 |---|---|---|---|---|---|
-| [CM-19 HLG passthrough lacks HDR metadata](reports/color-management-verification.md) | confirmed | none | none | none |  |
-| [CM-20 Forced HDR without usable luminance data falls back to an 80-nit peak](reports/color-management-verification.md) | confirmed | none | none | none |  |
-| [CM-21 HDR mirroring uses an sRGB intermediate and loses HDR range](reports/color-management-verification.md) | confirmed | none | none | none |  |
-| [CM-22 HDR passthrough does not fully check source/output compatibility](reports/color-management-verification.md) | confirmed | none | none | none |  |
-| [CM-23 HDR metadata uses container primaries and substitutes unknown light levels](reports/color-management-verification.md) | confirmed | none | none | none |  |
-| [CM-24 FP16 affects capture brightness on work-buffer / mirror paths](reports/color-management-verification.md) | partially | none | none | none | FP16 dependence is confirmed for work-buffer / mirror capture paths. Direct surface re-render capture retains the PQ description in both modes, so a brightness difference is not guaranteed for every screenshot path. |
-| [CM-25 FP16 blur omits SDR brightness / saturation adjustments](reports/color-management-verification.md) | confirmed | none | none | none |  |
-| [CM-26 Auto-HDR exit can mismatch content and mode or wait for further damage](reports/color-management-verification.md) | partially | none | none | none | The mode state changes in the same commit, not one commit late. The confirmed issue is content/mode mismatch; without new damage, the damage gate can delay the switch indefinitely. |
+| [CM-19 HLG passthrough lacks HDR metadata](agent-report/color-management/CM-19.md) | confirmed | none | none | none |  |
+| [CM-20 Forced HDR without usable luminance data falls back to an 80-nit peak](agent-report/color-management/CM-20.md) | confirmed | none | none | none |  |
+| [CM-21 HDR mirroring uses an sRGB intermediate and loses HDR range](agent-report/color-management/CM-21.md) | confirmed | none | none | none |  |
+| [CM-22 HDR passthrough does not fully check source/output compatibility](agent-report/color-management/CM-22.md) | confirmed | none | none | none |  |
+| [CM-23 HDR metadata uses container primaries and substitutes unknown light levels](agent-report/color-management/CM-23.md) | confirmed | none | none | none |  |
+| [CM-24 FP16 affects capture brightness on work-buffer / mirror paths](agent-report/color-management/CM-24.md) | partially | none | none | none | FP16 dependence is confirmed for work-buffer / mirror capture paths. Direct surface re-render capture retains the PQ description in both modes, so a brightness difference is not guaranteed for every screenshot path. |
+| [CM-25 FP16 blur omits SDR brightness / saturation adjustments](agent-report/color-management/CM-25.md) | confirmed | none | none | none |  |
+| [CM-26 Auto-HDR exit can mismatch content and mode or wait for further damage](agent-report/color-management/CM-26.md) | partially | none | none | none | The mode state changes in the same commit, not one commit late. The confirmed issue is content/mode mismatch; without new damage, the damage gate can delay the switch indefinitely. |
 
 ### CM — reference white and tonemapping
 
 | Issue | Agent confirmed | Manually confirmed | PR status | Claim status | Notes |
 |---|---|---|---|---|---|
-| [CM-27 Tonemap peak reference scaling disagrees with absolute-nit pixels](reports/color-management-verification.md) | confirmed | none | [PRed](https://github.com/hyprwm/Hyprland/pull/16529) | none |  |
-| [CM-28 Reference white is not anchored across image descriptions](reports/color-management-verification.md) | confirmed | none | none | none |  |
-| [CM-29 Output reference white is hardcoded to 203 nit](reports/color-management-verification.md) | confirmed | none | none | none |  |
+| [CM-27 Tonemap peak reference scaling disagrees with absolute-nit pixels](agent-report/color-management/CM-27.md) | confirmed | none | [PRed](https://github.com/hyprwm/Hyprland/pull/16529) | none |  |
+| [CM-28 Reference white is not anchored across image descriptions](agent-report/color-management/CM-28.md) | confirmed | none | none | none |  |
+| [CM-29 Output reference white is hardcoded to 203 nit](agent-report/color-management/CM-29.md) | confirmed | none | none | none |  |
 
 CM-18, CM-24, and CM-26 use the corrected, narrower findings from the verification report. CM-27’s PR #16529 is closed without merging; it remains `PRed` within the three requested PR states.
 
@@ -96,18 +99,18 @@ CM-18, CM-24, and CM-26 use the corrected, narrower findings from the verificati
 
 | Issue | Agent confirmed | Manually confirmed | PR status | Claim status | Notes |
 |---|---|---|---|---|---|
-| [HDR-COM-01 CPU-copy hardware cursor bypasses output color management](reports/community-hdr-validation.md) | confirmed | none | none | none |  |
-| [HDR-COM-03 SDR brightness / saturation applied after PQ encoding](reports/community-hdr-validation.md) | confirmed | none | none | none |  |
-| [HDR-COM-04 SDR presets advertise the panel's EDID HDR luminances as target headroom](reports/community-hdr-validation.md#hdr-com-04--sdr-presets-advertise-the-panels-hdr-headroom) | confirmed | none | [PRed](https://github.com/hyprwm/Hyprland/pull/16525) | none | PR #16525 is by a third party (open). Fork fixed in `06304f5d7`. |
+| [HDR-COM-01 CPU-copy hardware cursor bypasses output color management](agent-report/color-management/HDR-COM-01.md) | confirmed | none | none | none |  |
+| [HDR-COM-03 SDR brightness / saturation applied after PQ encoding](agent-report/color-management/HDR-COM-03.md) | confirmed | none | none | none |  |
+| [HDR-COM-04 SDR presets advertise the panel's EDID HDR luminances as target headroom](agent-report/color-management/HDR-COM-04.md) | confirmed | none | [PRed](https://github.com/hyprwm/Hyprland/pull/16525) | none | PR #16525 is by a third party (open). Fork fixed in `06304f5d7`. |
 
 ### CM — side findings from fork fixes
 
 | Issue | Agent confirmed | Manually confirmed | PR status | Claim status | Notes |
 |---|---|---|---|---|---|
-| [SIDE-04 Hardware cursor not re-rendered when the output image description changes (soft monitor rules, auto HDR)](reports/fork-fix-side-findings.md#side-04) | confirmed | none | none | none |  |
-| [SIDE-05 Cursor surface image description ignored by software and GPU hardware cursors](reports/fork-fix-side-findings.md#side-05) | confirmed | none | none | none |  |
-| [SIDE-07 Interned image descriptions / primaries are never freed and looked up linearly (client-driven memory / CPU growth)](reports/fork-fix-side-findings.md#side-07) | confirmed | none | none | none | Upstream half of fork dossier F-CM-01/07. |
-| [SIDE-08 get_preferred on an orphaned subsurface crashes in t1Parent](reports/fork-fix-side-findings.md#side-08) | confirmed | none | none | none | Upstream half of fork dossier F-CM-06; same crash site as SIDE-01. |
+| [SIDE-04 Hardware cursor not re-rendered when the output image description changes (soft monitor rules, auto HDR)](agent-report/color-management/SIDE-04.md) | confirmed | none | none | none |  |
+| [SIDE-05 Cursor surface image description ignored by software and GPU hardware cursors](agent-report/color-management/SIDE-05.md) | confirmed | none | none | none |  |
+| [SIDE-07 Interned image descriptions / primaries are never freed and looked up linearly (client-driven memory / CPU growth)](agent-report/color-management/SIDE-07.md) | confirmed | none | none | none | Upstream half of fork dossier F-CM-01/07. |
+| [SIDE-08 get_preferred on an orphaned subsurface crashes in t1Parent](agent-report/color-management/SIDE-08.md) | confirmed | none | none | none | Upstream half of fork dossier F-CM-06; same crash site as SIDE-01. |
 
 ### CM — known implementation limitations
 
@@ -115,8 +118,8 @@ These are confirmed restrictions or explicit policies, tracked separately from d
 
 | Issue | Agent confirmed | Manually confirmed | PR status | Claim status | Notes |
 |---|---|---|---|---|---|
-| [HDR-LIM-01 Capture targets remain sRGB without HDR / wide-gamut negotiation](reports/community-hdr-validation.md) | confirmed | none | none | none |  |
-| [HDR-LIM-02 Incompatible direct scanout allowed by non_shader_cm=ignore](reports/community-hdr-validation.md) | confirmed | none | none | none |  |
+| [HDR-LIM-01 Capture targets remain sRGB without HDR / wide-gamut negotiation](agent-report/color-management/HDR-LIM-01.md) | confirmed | none | none | none |  |
+| [HDR-LIM-02 Incompatible direct scanout allowed by non_shader_cm=ignore](agent-report/color-management/HDR-LIM-02.md) | confirmed | none | none | none |  |
 
 ### CM — rejected diagnoses
 
@@ -124,8 +127,8 @@ These diagnoses were withdrawn by their reporters and are retained for traceabil
 
 | Issue | Agent confirmed | Manually confirmed | PR status | Claim status | Notes |
 |---|---|---|---|---|---|
-| [Community #14504 Red shift attributed to Hyprland CM (reporter identified hyprsunset)](reports/community-hdr-validation.md) | rejected | none | none | none | The reporter withdrew the Hyprland CM diagnosis after identifying hyprsunset as the source of the red shift. |
-| [Community #15195 Elevated SDR black attributed to a renderer bug (reporter identified black-floor settings)](reports/community-hdr-validation.md) | rejected | none | none | none | The reporter withdrew the renderer-bug diagnosis after identifying the configured SDR black floor; adjusting the luminance settings resolved their case. |
+| [Community #14504 Red shift attributed to Hyprland CM (reporter identified hyprsunset)](agent-report/color-management/COMMUNITY-14504.md) | rejected | none | none | none | The reporter withdrew the Hyprland CM diagnosis after identifying hyprsunset as the source of the red shift. |
+| [Community #15195 Elevated SDR black attributed to a renderer bug (reporter identified black-floor settings)](agent-report/color-management/COMMUNITY-15195.md) | rejected | none | none | none | The reporter withdrew the renderer-bug diagnosis after identifying the configured SDR black floor; adjusting the luminance settings resolved their case. |
 
 ### CM — ICC loader candidates
 
@@ -189,9 +192,9 @@ These diagnoses were withdrawn by their reporters and are retained for traceabil
 | [F-PROTO-08 Unbounded region / layer configure bookkeeping](pending-evaluation/2026-10-full-audit/06-protocols-shell.md) | none | none | none |  |
 | [F-PROTO-09 Weak configure-ack serial validation](pending-evaluation/2026-10-full-audit/06-protocols-shell.md) | none | none | none |  |
 | [F-PROTO-10 Resource type and layer-popup null checks depend on external guards](pending-evaluation/2026-10-full-audit/06-protocols-shell.md) | none | none | none |  |
-| [SIDE-01 get_subsurface on an orphaned subsurface parent dereferences null in t1Parent (compositor SIGSEGV)](reports/fork-fix-side-findings.md#side-01) | confirmed | none | none | Repro: [subsurface-orphan-parent](repro/subsurface-orphan-parent/) |
-| [SIDE-02 t1Parent returns the wrong ancestor for subsurface nesting depth ≥ 3](reports/fork-fix-side-findings.md#side-02) | confirmed | none | none |  |
-| [SIDE-03 posRelativeToParent mis-positions subsurfaces at nesting depth ≥ 3](reports/fork-fix-side-findings.md#side-03) | confirmed | none | none |  |
+| [SIDE-01 get_subsurface on an orphaned subsurface parent dereferences null in t1Parent (compositor SIGSEGV)](agent-report/surface-protocols/SIDE-01.md) | confirmed | none | none | Repro: [subsurface-orphan-parent](agent-report/surface-protocols/_assets/subsurface-orphan-parent/) |
+| [SIDE-02 t1Parent returns the wrong ancestor for subsurface nesting depth ≥ 3](agent-report/surface-protocols/SIDE-02.md) | confirmed | none | none |  |
+| [SIDE-03 posRelativeToParent mis-positions subsurfaces at nesting depth ≥ 3](agent-report/surface-protocols/SIDE-03.md) | confirmed | none | none |  |
 
 ### Capture / shared memory / input protocols
 
@@ -238,8 +241,8 @@ These diagnoses were withdrawn by their reporters and are retained for traceabil
 | [F-SEAT-08 set_mode 不校验 mode 与 head 的归属 → 跨 head 模式注入](pending-evaluation/2026-10-full-audit/09-seat-clipboard.md) | none | none | none |  |
 | [F-SEAT-09 set_position 不校验布局合法性（重叠/越界）→ 监视器布局破坏](pending-evaluation/2026-10-full-audit/09-seat-clipboard.md) | none | none | none |  |
 | [F-SEAT-10 pointer.set_cursor 的 serial 校验被注释禁用 → 光标图像注入无输入合法性约束](pending-evaluation/2026-10-full-audit/09-seat-clipboard.md) | none | none | none |  |
-| [F-SEAT-11 光标 shm 像素数据拷贝无尺寸/格式校验；CPU 光标路径每帧原地翻转角色缓冲](pending-evaluation/2026-10-full-audit/09-seat-clipboard.md) | none | none | none | Flip-order correction: [side findings](reports/fork-fix-side-findings.md#f-seat-11-correction) |
-| [SIDE-06 CPU cursor copy assumes the dumb buffer stride and size](reports/fork-fix-side-findings.md#side-06) | confirmed | none | none |  |
+| [F-SEAT-11 光标 shm 像素数据拷贝无尺寸/格式校验；CPU 光标路径每帧原地翻转角色缓冲](pending-evaluation/2026-10-full-audit/09-seat-clipboard.md) | none | none | none | Flip-order correction: [side findings](agent-report/surface-protocols/_evidence/fork-fix-side-findings.md#f-seat-11-correction) |
+| [SIDE-06 CPU cursor copy assumes the dumb buffer stride and size](agent-report/input/SIDE-06.md) | confirmed | none | none |  |
 | [F-SEAT-12 触摸焦点记账是"单槽"模型：per-finger 状态共享一个槽位，合成 up 依赖会被覆盖的监听器](pending-evaluation/2026-10-full-audit/09-seat-clipboard.md) | none | none | none |  |
 | [F-SEAT-13 wl_data_device_manager.get_data_device 完全不使用 seat 参数；数据面无需 seat 即可建立](pending-evaluation/2026-10-full-audit/09-seat-clipboard.md) | none | none | none |  |
 | [F-SEAT-14 serial 存储记账缺陷：enterSerial 永不消费、serials 上限 100 可被挤掉 → serial 重放](pending-evaluation/2026-10-full-audit/09-seat-clipboard.md) | none | none | none |  |
@@ -332,16 +335,15 @@ These diagnoses were withdrawn by their reporters and are retained for traceabil
 |---|---|---|---|---|
 | [F-TMR-01 Screenshare stop timer is not unregistered](pending-evaluation/2026-10-full-audit/15-eventloop-timers.md) | none | none | none |  |
 
-## Using the reproductions
+## Repository structure and contribution requirements
 
-Each `repro/<name>/` directory is one bug: a standalone client
-(`bash build.sh`) plus its `REPORT.md` deep-dive (trigger analysis, spec
-citations, fix proposal). The overall audit status for the whole area lives in
-`reports/`.
+- **`pending-evaluation/`** keeps the existing raw audit snapshots and category layout. These are candidates awaiting evaluation; moving or linking a candidate does not confirm it.
+- **`agent-report/<category>/<issue-id>.md`** contains one Markdown report per evaluated issue, including automated analysis, reproduction results, tested revisions, limitations, and links to supporting artifacts. Existing shared source reports are preserved under each category's `_evidence/`; agent-run code and results live under `_assets/`. These supporting directories do not confer human confirmation.
+- **`human-confirmed/<category>/<issue-id>/`** contains the human-reviewed report and tested reproduction code, patches, logs, or other evidence for one issue. AI-generated material is allowed **only after a human has reviewed it, confirmed it is correct, and tested it**. Record the reviewer, review date, exact revision/environment, test procedure, results, and remaining limitations. An agent-run test alone does not qualify.
 
-⚠️ Reproductions crash a vulnerable session with unsaved data. Run them
-against nested/headless instances only, and keep this repository private
-until the corresponding fixes are merged upstream.
+All existing reproduction artifacts remain under `agent-report/` because this tracker has no explicit human validation records yet. `human-confirmed/` currently contains requirements only; add an issue directory after the human review and testing requirements are met. Both confirmation columns continue to use `none`, `confirmed`, `partially`, or `rejected`; explain partial or rejected findings in **Notes** and the report.
+
+Existing executable reproductions retain their own build instructions in their `_assets/` directories. Run crash reproductions only in an isolated nested/headless session with no unsaved data. See the linked issue report for its actual verification scope. Keep sensitive crash reproductions private until the corresponding fixes are merged upstream.
 
 ## Methodology notes
 

@@ -1,6 +1,6 @@
 # Bug report — feedback never becomes inert when its wl_surface dies
 
-(Extract from the color-management audit; see the overall verification table at [`../../reports/color-management-verification.md`](../../reports/color-management-verification.md).)
+(Extract from the color-management audit; see the overall verification table at [`../../_evidence/color-management-verification.md`](../../_evidence/color-management-verification.md).)
 
 ## Report 1: feedback never becomes inert when its surface dies → null-deref SIGSEGV in onPreferredChanged
 

@@ -1,6 +1,6 @@
 # HDR community shader numerics
 
-Benign standalone calculation checks for HDR-COM-02/03 in [the validation report](../../reports/community-hdr-validation.md). No Wayland socket, compositor reload, screen capture, output creation, KMS state change, or crash client is used.
+Benign standalone calculation checks for HDR-COM-02/03 in [the validation report](../../_evidence/community-hdr-validation.md). No Wayland socket, compositor reload, screen capture, output creation, KMS state change, or crash client is used.
 
 The runner creates a surfaceless EGL/GLES 3.1+ compute context. It may use the installed GPU driver; it does not imply a software renderer or physical HDR acceptance.
 
@@ -11,7 +11,7 @@ Export the unmodified official source at `e2ad066c9ffd45ddfbe4dc76d2de16b382fbe3
 ```sh
 mkdir -p /tmp/hypr-hdr-source
 git -C /path/to/Hyprland archive e2ad066c9ffd45ddfbe4dc76d2de16b382fbe3eb | tar -xf - -C /tmp/hypr-hdr-source
-python repro/hdr-community-numerics/verify.py --source /tmp/hypr-hdr-source
+python agent-report/color-management/_assets/hdr-community-numerics/verify.py --source /tmp/hypr-hdr-source
 ```
 
 The source tree is read-only. Generated C binaries and shaders use a temporary directory and are removed afterward. `--output /path/to/result.json` optionally saves results. No network access occurs.

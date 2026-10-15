@@ -3,7 +3,7 @@
 Static-review snapshot from a sweep of the fork (`gfhdhytghd/Hyprland`, branch `main`,
 commit `397cb0efb`, version `0.56.0`). Eleven dossiers were produced by audit subagents
 and four by the orchestrating agent; **none of these findings have been
-reproduced/verified yet** (unlike the color-management dossier in `reports/`). Treat
+reproduced/verified yet** (unlike the color-management dossier in `agent-report/`). Treat
 every claim as machine-generated until a repro client or a nested-session crash confirms it.
 
 - Total: **135 findings across 15 dossiers**.
@@ -99,7 +99,7 @@ every claim as machine-generated until a repro client or a nested-session crash 
 |---|---|---|---|
 | all | ☐ | ☐ | ☐ |
 
-Move confirmed items into `reports/` + `repro/<bug>/` dossiers once each has a
+Move evaluated items into `agent-report/<category>/<issue-id>.md` with linked agent artifacts once each has a
 compilable client and a nested-session crash/leak observation.
 
 ⚠️ Reproduction clients for the crash-class findings will kill a live session —

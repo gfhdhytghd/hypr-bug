@@ -1,6 +1,11 @@
-repro/**/repro
-repro/**/*.so
-repro/*/[xc]*-*-protocol.*
-repro/*/color-management-v1-client-protocol.h
-repro/*/xdg-shell-client-protocol.h
+agent-report/**/repro
+agent-report/**/*.so
+agent-report/**/[xc]*-*-protocol.*
+agent-report/**/color-management-v1-client-protocol.h
+agent-report/**/xdg-shell-client-protocol.h
+human-confirmed/**/repro
+human-confirmed/**/*.so
+human-confirmed/**/[xc]*-*-protocol.*
+human-confirmed/**/color-management-v1-client-protocol.h
+human-confirmed/**/xdg-shell-client-protocol.h
 *.o

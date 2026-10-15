@@ -134,8 +134,8 @@ The behavior in [#16219](https://github.com/hyprwm/Hyprland/discussions/16219) i
 
 ## Executed validation
 
-[`repro/hdr-community-numerics/verify.py`](../repro/hdr-community-numerics/verify.py) compiles the **actual pinned upstream GLSL helpers** into a standalone surfaceless GLES compute shader, with independent PQ arithmetic checks and EXT_LINEAR/Windows-scRGB controls. The supplied ranges isolate helper behavior; this does not instantiate `getCMSettings`, a Wayland client, a capture session, or the compositor.
+[`../_assets/hdr-community-numerics/verify.py`](../_assets/hdr-community-numerics/verify.py) compiles the **actual pinned upstream GLSL helpers** into a standalone surfaceless GLES compute shader, with independent PQ arithmetic checks and EXT_LINEAR/Windows-scRGB controls. The supplied ranges isolate helper behavior; this does not instantiate `getCMSettings`, a Wayland client, a capture session, or the compositor.
 
-Observed renderer: NVIDIA RTX PRO 6000 Blackwell Workstation Edition, OpenGL ES 3.2, driver 615.71.09. This was an isolated EGL computation, **not a software-renderer run and not a physical HDR display measurement**. No output/window was created. [Recorded values and source hashes](../repro/hdr-community-numerics/evidence.json) accompany the reproducer.
+Observed renderer: NVIDIA RTX PRO 6000 Blackwell Workstation Edition, OpenGL ES 3.2, driver 615.71.09. This was an isolated EGL computation, **not a software-renderer run and not a physical HDR display measurement**. No output/window was created. [Recorded values and source hashes](../_assets/hdr-community-numerics/evidence.json) accompany the reproducer.
 
 No new actual-Godot, Firefox/YUV, cursor-plane, multi-monitor blur, suspend/resume, screenshot, scanout, or local-fork integration acceptance is claimed.

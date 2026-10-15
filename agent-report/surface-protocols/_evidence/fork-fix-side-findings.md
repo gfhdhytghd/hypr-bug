@@ -14,7 +14,7 @@ While fixing the fork's color-management findings and HDR-COM-01 on `gfhdhytghd/
 - **Executed:** a gtest using the fork's Wayland protocol fixture (`tests/protocols/ColorManagementProtocol.cpp`) was compiled against upstream `src/protocols/core/Subcompositor.cpp` taken verbatim from `e2ad066c9`. It sends real protocol requests through libwayland-server. The probe tests were temporary and are not committed to the fork.
 - **Source-confirmed:** the full call chain was read at `e2ad066c9`. It has not been run.
 
-No live session, physical display, or NVIDIA cursor plane was used. The SIDE-01 client in [`repro/subsurface-orphan-parent`](../repro/subsurface-orphan-parent/) was compiled but deliberately **not run** against the live compositor.
+No live session, physical display, or NVIDIA cursor plane was used. The SIDE-01 client in [`../_assets/subsurface-orphan-parent/`](../_assets/subsurface-orphan-parent/) was compiled but deliberately **not run** against the live compositor.
 
 | ID | Severity | Finding | Verification | Fork |
 |---|---|---|---|---|
@@ -53,7 +53,7 @@ wl_subcompositor.get_subsurface(C, parent = B)        Subcompositor.cpp:163
 3. `wl_surface.destroy(A)`.
 4. `get_subsurface(C, B)`.
 
-[`repro/subsurface-orphan-parent`](../repro/subsurface-orphan-parent/) is a standalone client for this sequence.
+[`../_assets/subsurface-orphan-parent/`](../_assets/subsurface-orphan-parent/) is a standalone client for this sequence.
 
 **Executed:** the same sequence, sent through the protocol fixture against upstream `Subcompositor.cpp`, kills the test process with SIGSEGV:
 
@@ -81,7 +81,7 @@ At `Subcompositor.cpp:147`, the loop body reads `sc<CSubsurfaceRole*>(m_parent->
 - The `t1Parent == SURF` cycle check in `get_subsurface` (`:188`) compares against the wrong surface, so cycles through deeper chains are not rejected.
 - Any feature keyed on the top-level surface uses an intermediate subsurface instead. In the fork this includes the preferred image description.
 
-**Prior mention.** This was first noted as an unnumbered aside in [`06-protocols-shell.md`](../pending-evaluation/2026-10-full-audit/06-protocols-shell.md), with no end-to-end proof. It is now executed and numbered.
+**Prior mention.** This was first noted as an unnumbered aside in [`06-protocols-shell.md`](../../../pending-evaluation/2026-10-full-audit/06-protocols-shell.md), with no end-to-end proof. It is now executed and numbered.
 
 **Fix.** Use `surf->m_role` in the loop.
 

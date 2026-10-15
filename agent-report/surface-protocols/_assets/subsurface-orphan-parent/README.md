@@ -9,4 +9,4 @@ null `m_parent.lock()`.
 throwaway session.
 
 Build with `bash build.sh`, then run `./repro`. Analysis, verification and the
-fix: [`../../reports/fork-fix-side-findings.md`](../../reports/fork-fix-side-findings.md#side-01).
+fix: [`../../_evidence/fork-fix-side-findings.md`](../../_evidence/fork-fix-side-findings.md#side-01).
