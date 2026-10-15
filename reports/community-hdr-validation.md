@@ -17,6 +17,8 @@ The search returned 392 unique candidates and retained 184 related/historical/co
 
 ## Confirmed defects
 
+> Addendum (same day): HDR-COM-04 was added after this run, from PR #16525 / #13418, with source confirmation at the same baseline.
+
 | ID | Finding | Official source | Local fork | Deduplication |
 |---|---|---|---|---|
 | HDR-COM-01 | CPU-copy hardware cursor bypasses output color conversion | Present; source-confirmed | Same path still present | **New** relative to the existing 29-item list |
@@ -70,6 +72,28 @@ The search returned 392 unique candidates and retained 184 related/historical/co
 
 **Local status:** `src/render/shaders/glsl/cm_helpers.glsl:353–366` moves SDR adjustments before tonemapping/output encoding. The fork's reference-white anchoring can change absolute expected white levels, so the upstream numbers above must not be reused as a fork regression oracle.
 
+### HDR-COM-04 — SDR presets advertise the panel's HDR headroom
+
+**Community:**
+- [#13418](https://github.com/hyprwm/Hyprland/discussions/13418): Chromium/Electron white rendered at 187/255 next to GTK's 255 with `cm = edid` or `auto` on a 10-bit output.
+- [#13221](https://github.com/hyprwm/Hyprland/discussions/13221): the same symptom, closed as fixed upstream.
+- [PR #16525](https://github.com/hyprwm/Hyprland/pull/16525) (open, unmerged at the time of writing) states that #13221 still reproduces on main.
+
+**Evidence:**
+- [`applyCMType`](https://github.com/hyprwm/Hyprland/blob/e2ad066c9ffd45ddfbe4dc76d2de16b382fbe3eb/src/output/Monitor.cpp#L508-L516) reads the EDID mastering luminances, maxCLL and maxFALL once. It attaches them to every preset except sRGB: [`CM_WIDE` … `CM_EDID`](https://github.com/hyprwm/Hyprland/blob/e2ad066c9ffd45ddfbe4dc76d2de16b382fbe3eb/src/output/Monitor.cpp#L524-L573), all of which use the SDR transfer function.
+- [`CColorManagementImageDescriptionInfo`](https://github.com/hyprwm/Hyprland/blob/e2ad066c9ffd45ddfbe4dc76d2de16b382fbe3eb/src/protocols/ColorManagement.cpp#L851-L858) sends `target_luminance` from the mastering luminances whenever their maximum is set. It also sends `target_max_cll` / `target_max_fall`.
+- The resulting SDR output description advertises, for example, `luminances(0.2, 80, 80)` alongside `target_luminance(0.001, 1060)`. Chromium reads that as 13.25× headroom above SDR white and dims its SDR content to leave room for highlights. A gamma-2.2 output cannot encode anything above its reference white, and the compositor does not dim other content to match. The net effect is only darker Chromium/Electron content.
+
+**Side effect:** that false headroom is also what makes Chromium request HDR and trip `cm_auto_hdr` on SDR presets.
+
+**Scope:**
+- **Upstream:** the effect is client-visible only. `getCMSettings` takes its destination peak from `luminances.max` ([`Renderer.cpp:2134`](https://github.com/hyprwm/Hyprland/blob/e2ad066c9ffd45ddfbe4dc76d2de16b382fbe3eb/src/render/Renderer.cpp#L2134)), so upstream's own tonemapping is not affected.
+- **Infoframes:** the SDR path commits `NO_HDR_METADATA`, so nothing changes in what is sent to the display.
+
+**Verification:** source-confirmed at `e2ad066c9`. No Chromium measurement was repeated here; the 187/255 figure and the 1060-nit EDID are the PR author's.
+
+**Local status:** fixed in fork `06304f5d7`, which only attaches the luminances for `CM_HDR` / `CM_HDR_EDID`, matching PR #16525. In the fork the defect was worse than upstream: the fork's CM takes the target peak from the mastering luminances when they are set (`src/render/CMSettings.cpp:23`, `Monitor.cpp` scanout compatibility, hardware CM). On an SDR preset it therefore tonemapped HDR content for the panel's HDR peak instead of the SDR output.
+
 ## Confirmed limitations — not additional defect claims
 
 ### HDR-LIM-01 — capture targets remain sRGB
@@ -103,7 +127,7 @@ The behavior in [#16219](https://github.com/hyprwm/Hyprland/discussions/16219) i
 | #14504 — red shift | Withdrawn root cause | Author attributed it to hyprsunset. |
 | #15195 — elevated SDR black proves a renderer bug | Withdrawn root cause | Author later identified the SDR black-floor setting. This does not invalidate separately established reference-white defects. |
 | #15864 — HDR blur noise | Configuration/effect report | Author confirmed `blur.noise=0` addressed their case. No independent driver dithering defect established. |
-| #13221 / #14631 | Historical resolution reported | Authors report fixes; not newly admitted without a current counterexample. |
+| #13221 / #14631 | Historical resolution reported; #13221 superseded by HDR-COM-04 | #13221's symptom is admitted as [HDR-COM-04](#hdr-com-04--sdr-presets-advertise-the-panels-hdr-headroom) on source evidence (PR #16525 reports it still reproducing). #14631 is unchanged: authors report fixes; not newly admitted without a current counterexample. |
 | #15747 — CTM precision and negative coefficients | Verified protocol/design limitation, not admitted as a new bug | `CTMControl.cpp:35–41` uses wl_fixed values and rejects negative coefficients. That establishes the restriction, not a violation of the existing interface contract. |
 | #16541 / #16544 / #16329 | Existing records; cross-reference only | Correspond to old #27/#1/#29. First two are the user's own upstream reports and not independent community confirmation. |
 | Remaining retained records | Community-only / historical evidence | Kept in the per-record ledger, excluded from the confirmed defect count. |
