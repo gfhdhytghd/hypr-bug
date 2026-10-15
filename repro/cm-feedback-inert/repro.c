@@ -13,7 +13,8 @@
  *
  * Trigger: run this, then in another terminal change the output image
  * description, e.g.  hyprctl keyword monitor <output>,add,cm,hdr
- * (or ,add,sdr_max_luminance,300). Press Enter to start waiting.
+ * (anything that changes the description tuple works: cm, sdr_eotf,
+ *  bitdepth with cm=auto, or max/min_luminance while in hdr).
  *
  * Baseline: Hyprland cm/tonemap-ref-scaling @ 30e438818, render:cm_enabled=1.
  */
@@ -45,7 +46,9 @@ int main(void) {
 
     wl_surface_destroy(s); /* surface dies; feedback must become inert per spec — it doesn't */
     printf("[*] surface destroyed, feedback still parked in the server-side list\n");
-    printf("[*] in another terminal run, e.g.:\n    hyprctl keyword monitor <output>,add,cm,hdr\n");
+    printf("[*] in another terminal run, e.g.:\n"
+           "    hyprctl keyword monitor <output>,add,cm,hdr\n"
+           "    (also works: ,add,sdr_eotf,gamma22 | ,add,bitdepth,10 with cm=auto | under hdr: ,add,max_luminance,600)\n");
     printf("[*] press Enter when done…\n");
     fflush(stdout);
     getchar();
