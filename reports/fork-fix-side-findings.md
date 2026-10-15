@@ -20,7 +20,7 @@ No live session, physical display, or NVIDIA cursor plane was used. The SIDE-01 
 |---|---|---|---|---|
 | [SIDE-01](#side-01) | High | `get_subsurface` on an orphaned subsurface parent → null dereference in `t1Parent()` → compositor SIGSEGV | Executed (SIGSEGV) | fixed `ada0711d4` |
 | [SIDE-02](#side-02) | Medium | `t1Parent()` returns the wrong ancestor for nesting depth ≥ 3 | Executed | fixed `ada0711d4` |
-| [SIDE-03](#side-03) | Medium | `posRelativeToParent()` mis-positions subsurfaces at nesting depth ≥ 3 | Executed (21 vs 111) | **not fixed** |
+| [SIDE-03](#side-03) | Medium | `posRelativeToParent()` mis-positions subsurfaces at nesting depth ≥ 3 | Executed (21 vs 111) | fixed `475147aec` |
 | [SIDE-04](#side-04) | Medium | Hardware cursor not re-rendered when the output image description changes | Source-confirmed | fixed `ca7335ac3`, `7f334993b` |
 | [SIDE-05](#side-05) | Low | Cursor surface's own image description is ignored by the software and GPU hardware cursor | Source-confirmed | fixed `7f334993b` |
 | [SIDE-06](#side-06) | Low | CPU cursor copy assumes the dumb buffer's stride and size | Source-confirmed | fixed `7f334993b` |
@@ -92,7 +92,7 @@ At `Subcompositor.cpp:147`, the loop body reads `sc<CSubsurfaceRole*>(m_parent->
 **Executed:**
 - Offsets: B = (100, 0), C = (10, 0), D = (1, 0).
 - Upstream returns x = **21**; the expected value is **111**.
-- The fork returns 21 as well, because this function was deliberately left unchanged there.
+- The fork returned 21 as well until `475147aec`, which fixes it and adds a regression test.
 
 **Fix.**
 - Use `surf->m_role`.
