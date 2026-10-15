@@ -37,9 +37,9 @@ Raw agent output awaiting triage (pre-verification snapshots) is parked in
 
 ## Issue list
 
-Both confirmation columns support `none` (default / not yet validated), `yes` (confirmed), and `否认` (reviewed and rejected). A real bug that was subsequently fixed retains its confirmation status; `否认` is for a rejected diagnosis, not a resolved bug. PR status is `none` (default), `PRed` (a matching upstream PR has been submitted but not merged), or `accepted` (the matching fix has been merged upstream). A Discussion, feature request, or local fork fix alone does not change PR status.
+Both confirmation columns support `none` (default / not yet validated), `yes` (confirmed), and `rejected` (reviewed and rejected). A real bug that was subsequently fixed retains its confirmation status; `rejected` is for a rejected diagnosis, not a resolved bug. PR status is `none` (default), `PRed` (a matching upstream PR has been submitted but not merged), or `accepted` (the matching fix has been merged upstream). A Discussion, feature request, or local fork fix alone does not change PR status.
 
-`Agent confirmed = yes` means the linked report contains independent source/specification, numeric, or runtime confirmation **at its pinned revision**. It does not imply current-version reproduction or physical-display acceptance. A manual `yes` or `否认` requires an explicit human validation record for this tracker; authorship, screenshots, or an agent-run test alone do not set that column, so it currently defaults to `none`.
+`Agent confirmed = yes` means the linked report contains independent source/specification, numeric, or runtime confirmation **at its pinned revision**. It does not imply current-version reproduction or physical-display acceptance. A manual `yes` or `rejected` requires an explicit human validation record for this tracker; authorship, screenshots, or an agent-run test alone do not set that column, so it currently defaults to `none`.
 
 The original CM list has 29 entries. HDR-COM-02 is folded into CM-18; HDR-COM-03 expands a previously unnumbered minor item. The 135 full-audit entries remain unverified candidates (`none`), including informational/control records; they are not 135 confirmed bugs. Community-only records remain in the [triage ledger](reports/community-hdr-triage.json).
 
@@ -120,8 +120,8 @@ These diagnoses were withdrawn by their reporters and are retained for traceabil
 
 | Issue | Agent confirmed | Manually confirmed | PR status | Claim status | Notes |
 |---|---|---|---|---|---|
-| [Community #14504 Red shift attributed to Hyprland CM (reporter identified hyprsunset)](reports/community-hdr-validation.md) | 否认 | none | none | none |  |
-| [Community #15195 Elevated SDR black attributed to a renderer bug (reporter identified black-floor settings)](reports/community-hdr-validation.md) | 否认 | none | none | none |  |
+| [Community #14504 Red shift attributed to Hyprland CM (reporter identified hyprsunset)](reports/community-hdr-validation.md) | rejected | none | none | none |  |
+| [Community #15195 Elevated SDR black attributed to a renderer bug (reporter identified black-floor settings)](reports/community-hdr-validation.md) | rejected | none | none | none |  |
 
 ### Fork CM / HDR candidates
 
