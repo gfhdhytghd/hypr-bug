@@ -2,7 +2,7 @@
 
 ## Scope and result
 
-While fixing the fork's color-management findings and HDR-COM-01 on `gfhdhytghd/Hyprland`, six further upstream defects came up that are **not in any existing list**, plus one correction to an existing entry (F-SEAT-11). Each one was then checked against official upstream source.
+While fixing the fork's color-management findings and HDR-COM-01 on `gfhdhytghd/Hyprland`, six further upstream defects came up that are **not in any existing list**. SIDE-07/08 were added later: they are the upstream halves of fork dossier entries F-CM-01/07 and F-CM-06, which were first filed only against the fork, plus one correction to an existing entry (F-SEAT-11). Each one was then checked against official upstream source.
 
 | Baseline | Revision |
 |---|---|
@@ -24,6 +24,8 @@ No live session, physical display, or NVIDIA cursor plane was used. The SIDE-01 
 | [SIDE-04](#side-04) | Medium | Hardware cursor not re-rendered when the output image description changes | Source-confirmed | fixed `ca7335ac3`, `7f334993b` |
 | [SIDE-05](#side-05) | Low | Cursor surface's own image description is ignored by the software and GPU hardware cursor | Source-confirmed | fixed `7f334993b` |
 | [SIDE-06](#side-06) | Low | CPU cursor copy assumes the dumb buffer's stride and size | Source-confirmed | fixed `7f334993b` |
+| [SIDE-07](#side-07) | Medium | Interned image descriptions and primaries are never freed; lookups are linear (fork dossier F-CM-01/07) | Source-confirmed | fixed `bf2f1bfa7` |
+| [SIDE-08](#side-08) | High | `get_preferred` on an orphaned subsurface crashes in `t1Parent()` (fork dossier F-CM-06) | Source-confirmed; shares SIDE-01's executed crash site | fixed `ada0711d4` |
 | [F-SEAT-11 correction](#f-seat-11-correction) | — | `flipRB` swaps *after* copying, so the copied pixels are not flipped | Source-confirmed | path replaced in `7f334993b` |
 
 ---
@@ -136,6 +138,57 @@ A cursor surface that sets a `wp_color_management_surface_v1` description (e.g. 
 `PointerManager.cpp:685` copies `cairo_image_surface_get_height × cairo_image_surface_get_stride` bytes into `buf->beginDataPtr(0)` in one `memcpy`. It never compares that against the dumb buffer's `strides[0]` or the returned size. If a driver pads the dumb-buffer stride beyond `width × 4`, every row after the first lands shifted. If it returns a smaller mapping, the copy writes past it. Common cursor widths (64, 128, 256) are usually aligned already, which hides the bug.
 
 **Fix.** Copy row by row using the buffer's stride, after checking the returned format and size.
+
+## SIDE-07
+
+**Interned image descriptions and primaries are never freed, and every lookup is linear.** Severity: **Medium**: a local client can cause memory and CPU DoS. Origin: fork dossier F-CM-01, with F-CM-07 folded in.
+
+**Code at `e2ad066c9`:**
+- `knownPrimaries` and `knownDescriptions` are static vectors of `UP` ([`helpers/cm/ColorManagement.cpp:18-19`](https://github.com/hyprwm/Hyprland/blob/e2ad066c9ffd45ddfbe4dc76d2de16b382fbe3eb/src/helpers/cm/ColorManagement.cpp#L18-L19)).
+- `CPrimaries::from(SPCPRimaries)` (`:43-50`) and `CImageDescription::from(SImageDescription)` (`:87-94`) scan the whole vector, then append on a miss. Nothing ever removes an entry.
+- `primariesConversion` (`:20`, `:76-79`) caches one matrix per (source, destination) primaries pair in a `std::map` that also only grows.
+
+Every `wp_image_description_creator_params_v1.create` reaches `CImageDescription::from` ([`protocols/ColorManagement.cpp:579`](https://github.com/hyprwm/Hyprland/blob/e2ad066c9ffd45ddfbe4dc76d2de16b382fbe3eb/src/protocols/ColorManagement.cpp#L579)), as does every ICC create (`:516`). The CM protocol is on by default (`render:cm_enabled = true`).
+
+**Trigger.** A client that repeatedly creates parametric descriptions with distinct values (e.g. stepping `set_luminances` or `set_primaries`) adds one permanent entry per create. Destroying the `wp_image_description_v1` objects or disconnecting does not release them. Memory grows without bound, and each later `from()` anywhere in the compositor, including render paths, pays an O(n) scan.
+
+**F-CM-07, folded in.** `from(id)` only `ASSERT`s `id <= size()` and indexes `[id - 1]` (`:57-59`, `:97-99`). An id of 0 underflows. No client-controlled path to id 0 was found, so this is hardening only.
+
+**Fix (as done in the fork).**
+- Refcounted, interned descriptions and primaries, with weak hash indexes by value and by monotonic 64-bit id. Entries are erased in their destructors, ids are never reused, and an unknown id returns null.
+- Bounded caches for derived data such as conversion matrices.
+
+## SIDE-08
+
+**`get_preferred` on an orphaned subsurface crashes in `t1Parent()`.** Severity: **High**: any client can trigger it while CM is enabled, which is the default. Origin: fork dossier F-CM-06.
+
+**Chain at `e2ad066c9`:**
+
+```
+wp_color_management_surface_feedback_v1.get_preferred        protocols/ColorManagement.cpp:402
+  m_surface still alive (the subsurface itself), so no inert error  :405-408
+  m_surface->getPreferredImageDescription()                  :420   (also :443 for get_preferred_parametric)
+    parent = m_self; role is SURFACE_ROLE_SUBSURFACE          core/Compositor.cpp:712-713
+    subsurface = role->m_subsurface.lock()                    :714   (no null check)
+    parent = subsurface->t1Parent()                           :715
+      surf = m_parent.lock() == nullptr -> surf->m_role       Subcompositor.cpp:142,145  SIGSEGV (same site as SIDE-01)
+    parent->m_enteredOutputs                                  :718   (second null dereference, if t1Parent ever returns null)
+```
+
+**Trigger:**
+1. Create surfaces A and B.
+2. `get_subsurface(B, A)`.
+3. `get_surface_feedback(B)` = F.
+4. `wl_surface.destroy(A)`.
+5. `F.get_preferred(new id)`.
+
+`onPreferredChanged` (`:459-461`) reaches the same call, but only for surfaces with exactly one entered output, so an unmapped orphan is not affected through that path.
+
+**Verification.** Source-confirmed. The crashing frame is the same `t1Parent()` null dereference that SIDE-01 executed against upstream `Subcompositor.cpp`. No separate client was run, because upstream `Compositor.cpp` cannot be dropped into the fork's test build.
+
+**Fix.**
+- Fix `t1Parent()` as in SIDE-01.
+- In `getPreferredImageDescription`, null-check the locked subsurface and the `t1Parent()` result, and fall back to the surface's own outputs.
 
 ## F-SEAT-11 correction
 
