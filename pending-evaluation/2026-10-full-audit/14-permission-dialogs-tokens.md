@@ -64,3 +64,10 @@
 - **位置**：`DynamicPermissionManager.cpp:240-262`（`{{app}}`/`{{plugin}}`/`{{keyboard}}` 占位符注入 i18n 模板）；模板含 `<b>...</b>`、调用处追加 `<br/><br/><i>`（:271）→ 描述是 **标记子集**（由 hyprland-dialog 渲染），但客户端可控字符串从未转义。
 - **描述**：`binaryPath`（攻击者可控：自己把恶意二进制放到任意路径，canonical 后即显示名；见 F-PERM-01 关联）、virtual-keyboard **名称**（客户端任意字符串，:259）、plugin 路径（F-IPC-03 可达）都可携带 `<b>`/`<i>` 标记或换行伪造排版——把对话框文案改成"System component – required for GPU driver"类钓鱼话术，诱导用户点 Allow。i18n 侧无外部 .mo 加载（翻译硬编码，无解析攻击面），但**参数未做标记转义**是确定的 UI 欺骗原语。
 - **修复**：占位符注入前做 HTML 转义（至少 `<>&` 与换行折叠），显示名截断长度。
+
+## F-PERM-07 ｜hyprland-dialog 缺失/不可判定 → 权限规则直接置 ALLOW（fail-open）— 严重程度：中
+
+- **位置**：`DynamicPermissionManager.cpp:276-283`——`m_dialogBox` 为空时注释即"Disabling permission control..."并 `rule->m_allowMode = PERMISSION_RULE_ALLOW_MODE_ALLOW`；判定函数 `AsyncDialogBox.cpp:15-17` → `FsUtils::executableExistsInPath`（`src/helpers/fs/FsUtils.cpp:83-107`）。
+- **描述**：三层叠加：① 找不到 `hyprland-dialog`（发行版未打包/被卸载/**others_exec 判定过严或过松**——见 12 报告 F-BOOT-03：该函数只看 others 位，0750 的合法二进制会被判"不存在"，而"存在即 return"的首候选短路逻辑还会被 PATH 前置目录劫持）→ 整场会话的权限系统**静默降级为全部 ALLOW**，无任何可见告警（只有 ERR 日志）；② 判定与 exec 之间无一致性（TOCTOU，同 F-BOOT-03）；③ fail-open 而非 fail-closed：安全门在自身依赖缺失时应默认 DENY 并通知用户，而不是继续放行走"无门"模式。
+- **攻击路径**：同用户恶意进程删除/替换 distro 的 hyprland-dialog（如 apt remove 被脚本化），或操纵 PATH → 之后所有 screencopy/input-capture/plugin 权限请求零提示放行。
+- **修复**：依赖缺失时按 DENY + 桌面通知；查找改用固定安装路径 + 属主/权限校验（与 F-BOOT-03 统一修）。
