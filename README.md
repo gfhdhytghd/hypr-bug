@@ -42,7 +42,7 @@ Both confirmation columns support `none` (default / not yet validated), `confirm
 
 `Agent confirmed = confirmed` means the linked report contains independent source/specification, numeric, or runtime confirmation **at its pinned revision**. It does not imply current-version reproduction or physical-display acceptance. A manual `confirmed`, `partially`, or `rejected` requires an explicit human validation record for this tracker; authorship, screenshots, or an agent-run test alone do not set that column, so it currently defaults to `none`.
 
-The original CM list has 29 entries. HDR-COM-02 is folded into CM-18; HDR-COM-03 expands a previously unnumbered minor item. The 135 full-audit entries remain unverified candidates (`none`), including informational/control records; they are not 135 confirmed bugs. Community-only records remain in the [triage ledger](reports/community-hdr-triage.json). The SIDE-xx entries are additional upstream defects found while fixing the fork; see the [side-findings report](reports/fork-fix-side-findings.md).
+The original CM list has 29 entries. HDR-COM-02 is folded into CM-18; HDR-COM-03 expands a previously unnumbered minor item. The full-audit entries listed below remain unverified candidates (`none`), including informational/control records; they are not 135 confirmed bugs. Community-only records remain in the [triage ledger](reports/community-hdr-triage.json). The fork-only F-CM-01..09 candidates from dossier 01 are not listed, because this tracker covers upstream; the fork has fixed or rejected all of them (see [`01-fork-cm-hdr.md`](pending-evaluation/2026-10-full-audit/01-fork-cm-hdr.md) for the raw dossier). The SIDE-xx entries are additional upstream defects found while fixing the fork; see the [side-findings report](reports/fork-fix-side-findings.md).
 
 CM tables also include **Claim status**: `none` means unclaimed; use `claimed (@handle)` to identify the claimant once an issue is claimed.
 
@@ -131,20 +131,6 @@ These diagnoses were withdrawn by their reporters and are retained for traceabil
 |---|---|---|---|---|---|
 | [Community #14504 Red shift attributed to Hyprland CM (reporter identified hyprsunset)](reports/community-hdr-validation.md) | rejected | none | none | none | The reporter withdrew the Hyprland CM diagnosis after identifying hyprsunset as the source of the red shift. |
 | [Community #15195 Elevated SDR black attributed to a renderer bug (reporter identified black-floor settings)](reports/community-hdr-validation.md) | rejected | none | none | none | The reporter withdrew the renderer-bug diagnosis after identifying the configured SDR black floor; adjusting the luminance settings resolved their case. |
-
-### Fork CM / HDR candidates
-
-| Issue | Agent confirmed | Manually confirmed | PR status | Claim status | Notes |
-|---|---|---|---|---|---|
-| [F-CM-01 Unbounded color-description and primaries caches](pending-evaluation/2026-10-full-audit/01-fork-cm-hdr.md) | none | none | none | none |  |
-| [F-CM-02 Expensive hardware-CM rebuilding on the frame path](pending-evaluation/2026-10-full-audit/01-fork-cm-hdr.md) | none | none | none | none |  |
-| [F-CM-03 Insufficient validation of mastering primaries / HDR metadata](pending-evaluation/2026-10-full-audit/01-fork-cm-hdr.md) | none | none | none | none |  |
-| [F-CM-04 Degenerate luminance ranges can reach shader divisions](pending-evaluation/2026-10-full-audit/01-fork-cm-hdr.md) | none | none | none | none |  |
-| [F-CM-05 Incomplete CM settings cache keys / invalidation](pending-evaluation/2026-10-full-audit/01-fork-cm-hdr.md) | none | none | none | none |  |
-| [F-CM-06 Subsurface preferred-description lifetime checks](pending-evaluation/2026-10-full-audit/01-fork-cm-hdr.md) | none | none | none | none |  |
-| [F-CM-07 Unchecked zero / invalid IDs in internal description lookup](pending-evaluation/2026-10-full-audit/01-fork-cm-hdr.md) | none | none | none | none |  |
-| [F-CM-08 Destroyed CM surface retains its committed description](pending-evaluation/2026-10-full-audit/01-fork-cm-hdr.md) | none | none | none | none |  |
-| [F-CM-09 Unreachable ICC-creator resource-management concerns](pending-evaluation/2026-10-full-audit/01-fork-cm-hdr.md) | none | none | none | none |  |
 
 ### CM — ICC loader candidates
 
