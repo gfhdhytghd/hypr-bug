@@ -29,6 +29,7 @@ dossier states its own verification level per finding.
 | 1 | HDR / color management (`cm/tonemap-ref-scaling`) | 29-item audit of `color-management-v1` handling; 2 High always-crash protocol bugs | verified (nested-session crashes observed); no upstream fix yet | [overall table](reports/color-management-verification.md) | [cm-feedback-inert](repro/cm-feedback-inert/) · [cm-failed-desc](repro/cm-failed-desc/) |
 | 2 | Full-codebase sweep @ `397cb0efb` — 15 areas: fork CM/HDR, IPC/hyprctl, hyprpm, config/Lua/ICC, XWayland ×2, xdg/layer-shell, misc protocols, seat/clipboard/DnD, desktop lifecycle, resource loading, boot/crash chain, input/keybinds, permission dialogs, event-loop timers | **135 findings / 15 dossiers**; top: virtual-keyboard → exec-keybind **RCE from any Wayland client** (F-INP-01), clipboard/DnD missing serial+focus checks, X11 socket 0666 w/o `-auth` (cross-user, pending live test), SIGBUS crashes (shm/vkbd keymap), IPC Lua eval/dispatch injection, permission-system fail-open paths | **static analysis only — none reproduced yet** | [batch index](pending-evaluation/2026-10-full-audit/README.md) | — |
 | 3 | Community HDR/CM validation @ official `e2ad066c9` vs local fork `3d52e94fd` | **3 confirmed mechanisms: 1 new CPU-copy cursor defect, 2 extensions of existing findings**; 2 implementation limitations recorded separately; 184 community records triaged | source-confirmed; 2 shader counterexamples executed in isolated EGL; physical HDR acceptance open; fork already contains corrective source for 2 findings | [validation and exclusions](reports/community-hdr-validation.md) · [per-record ledger](reports/community-hdr-triage.json) | [shader numerics](repro/hdr-community-numerics/) |
+| 4 | Side findings while fixing the fork @ official `e2ad066c9` vs fork `bd598253a` | **6 new upstream defects + 1 correction**: orphaned-subsurface `get_subsurface` **SIGSEGV from any client** (SIDE-01), wrong top-level/position for subsurface nesting ≥ 3, stale hardware cursor after output CM changes, cursor-surface image description ignored, CPU cursor stride; F-SEAT-11 flip-order correction | SIDE-01..03 executed against upstream `Subcompositor.cpp` (SIGSEGV / wrong values observed); SIDE-04..06 source-confirmed; fork fixes all but SIDE-03 | [side findings](reports/fork-fix-side-findings.md) | [subsurface-orphan-parent](repro/subsurface-orphan-parent/) |
 
 Raw agent output awaiting triage (pre-verification snapshots) is parked in
 [`pending-evaluation/`](pending-evaluation/).
@@ -41,7 +42,7 @@ Both confirmation columns support `none` (default / not yet validated), `confirm
 
 `Agent confirmed = confirmed` means the linked report contains independent source/specification, numeric, or runtime confirmation **at its pinned revision**. It does not imply current-version reproduction or physical-display acceptance. A manual `confirmed` or `rejected` requires an explicit human validation record for this tracker; authorship, screenshots, or an agent-run test alone do not set that column, so it currently defaults to `none`.
 
-The original CM list has 29 entries. HDR-COM-02 is folded into CM-18; HDR-COM-03 expands a previously unnumbered minor item. The 135 full-audit entries remain unverified candidates (`none`), including informational/control records; they are not 135 confirmed bugs. Community-only records remain in the [triage ledger](reports/community-hdr-triage.json).
+The original CM list has 29 entries. HDR-COM-02 is folded into CM-18; HDR-COM-03 expands a previously unnumbered minor item. The 135 full-audit entries remain unverified candidates (`none`), including informational/control records; they are not 135 confirmed bugs. Community-only records remain in the [triage ledger](reports/community-hdr-triage.json). The SIDE-xx entries are additional upstream defects found while fixing the fork; see the [side-findings report](reports/fork-fix-side-findings.md).
 
 CM tables also include **Claim status**: `none` means unclaimed; use `claimed (@handle)` to identify the claimant once an issue is claimed.
 
@@ -104,6 +105,13 @@ CM-18, CM-24, and CM-26 use the corrected, narrower findings from the verificati
 |---|---|---|---|---|---|
 | [HDR-COM-01 CPU-copy hardware cursor bypasses output color management](reports/community-hdr-validation.md) | confirmed | none | none | none |  |
 | [HDR-COM-03 SDR brightness / saturation applied after PQ encoding](reports/community-hdr-validation.md) | confirmed | none | none | none |  |
+
+### CM — side findings from fork fixes
+
+| Issue | Agent confirmed | Manually confirmed | PR status | Claim status | Notes |
+|---|---|---|---|---|---|
+| [SIDE-04 Hardware cursor not re-rendered when the output image description changes (soft monitor rules, auto HDR)](reports/fork-fix-side-findings.md#side-04) | confirmed | none | none | none |  |
+| [SIDE-05 Cursor surface image description ignored by software and GPU hardware cursors](reports/fork-fix-side-findings.md#side-05) | confirmed | none | none | none |  |
 
 ### CM — known implementation limitations
 
@@ -199,6 +207,9 @@ These diagnoses were withdrawn by their reporters and are retained for traceabil
 | [F-PROTO-08 Unbounded region / layer configure bookkeeping](pending-evaluation/2026-10-full-audit/06-protocols-shell.md) | none | none | none |  |
 | [F-PROTO-09 Weak configure-ack serial validation](pending-evaluation/2026-10-full-audit/06-protocols-shell.md) | none | none | none |  |
 | [F-PROTO-10 Resource type and layer-popup null checks depend on external guards](pending-evaluation/2026-10-full-audit/06-protocols-shell.md) | none | none | none |  |
+| [SIDE-01 get_subsurface on an orphaned subsurface parent dereferences null in t1Parent (compositor SIGSEGV)](reports/fork-fix-side-findings.md#side-01) | confirmed | none | none | Repro: [subsurface-orphan-parent](repro/subsurface-orphan-parent/) |
+| [SIDE-02 t1Parent returns the wrong ancestor for subsurface nesting depth ≥ 3](reports/fork-fix-side-findings.md#side-02) | confirmed | none | none |  |
+| [SIDE-03 posRelativeToParent mis-positions subsurfaces at nesting depth ≥ 3](reports/fork-fix-side-findings.md#side-03) | confirmed | none | none |  |
 
 ### Capture / shared memory / input protocols
 
@@ -245,7 +256,8 @@ These diagnoses were withdrawn by their reporters and are retained for traceabil
 | [F-SEAT-08 set_mode 不校验 mode 与 head 的归属 → 跨 head 模式注入](pending-evaluation/2026-10-full-audit/09-seat-clipboard.md) | none | none | none |  |
 | [F-SEAT-09 set_position 不校验布局合法性（重叠/越界）→ 监视器布局破坏](pending-evaluation/2026-10-full-audit/09-seat-clipboard.md) | none | none | none |  |
 | [F-SEAT-10 pointer.set_cursor 的 serial 校验被注释禁用 → 光标图像注入无输入合法性约束](pending-evaluation/2026-10-full-audit/09-seat-clipboard.md) | none | none | none |  |
-| [F-SEAT-11 光标 shm 像素数据拷贝无尺寸/格式校验；CPU 光标路径每帧原地翻转角色缓冲](pending-evaluation/2026-10-full-audit/09-seat-clipboard.md) | none | none | none |  |
+| [F-SEAT-11 光标 shm 像素数据拷贝无尺寸/格式校验；CPU 光标路径每帧原地翻转角色缓冲](pending-evaluation/2026-10-full-audit/09-seat-clipboard.md) | none | none | none | Flip-order correction: [side findings](reports/fork-fix-side-findings.md#f-seat-11-correction) |
+| [SIDE-06 CPU cursor copy assumes the dumb buffer stride and size](reports/fork-fix-side-findings.md#side-06) | confirmed | none | none |  |
 | [F-SEAT-12 触摸焦点记账是"单槽"模型：per-finger 状态共享一个槽位，合成 up 依赖会被覆盖的监听器](pending-evaluation/2026-10-full-audit/09-seat-clipboard.md) | none | none | none |  |
 | [F-SEAT-13 wl_data_device_manager.get_data_device 完全不使用 seat 参数；数据面无需 seat 即可建立](pending-evaluation/2026-10-full-audit/09-seat-clipboard.md) | none | none | none |  |
 | [F-SEAT-14 serial 存储记账缺陷：enterSerial 永不消费、serials 上限 100 可被挤掉 → serial 重放](pending-evaluation/2026-10-full-audit/09-seat-clipboard.md) | none | none | none |  |
