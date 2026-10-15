@@ -55,14 +55,7 @@ The **Notes** column records bounty amounts, other details, and the reasons for 
 | [CM-01 Feedback survives surface destruction and later crashes the compositor](repro/cm-feedback-inert/REPORT.md) | confirmed | none | none | none |  |
 | [CM-02 Failed image descriptions remain usable and cause null dereferences](repro/cm-failed-desc/REPORT.md) | confirmed | none | none | none |  |
 | [CM-03 Image-description changes are applied before the surface commit](reports/color-management-verification.md) | confirmed | none | none | none |  |
-| [CM-04 PQ luminance range does not follow the min + 10000 rule](reports/color-management-verification.md) | confirmed | none | none | none |  |
-| [CM-05 Windows BT.2100 / scRGB preset luminances are incomplete](reports/color-management-verification.md) | confirmed | none | none | none |  |
-| [CM-06 Incomplete parametric image descriptions are accepted](reports/color-management-verification.md) | confirmed | none | none | none |  |
-| [CM-07 MaxFALL / MaxCLL constraints are not validated](reports/color-management-verification.md) | confirmed | none | none | none |  |
-| [CM-08 Invalid mastering-luminance bounds are accepted](reports/color-management-verification.md) | confirmed | none | none | none |  |
-| [CM-09 Unadvertised transfer functions are accepted](reports/color-management-verification.md) | confirmed | none | none | none |  |
-| [CM-10 set_tf_power returns the wrong interface error code](reports/color-management-verification.md) | confirmed | none | none | none |  |
-| [CM-11 Inert color-management surfaces do not raise the inert error](reports/color-management-verification.md) | confirmed | none | none | none |  |
+| [CM-04–11 Protocol validation bundle: PQ min + 10000 rule (04), incomplete Windows scRGB preset luminances (05), incomplete parametric descriptions accepted (06), MaxCLL / MaxFALL not validated (07), invalid mastering-luminance bounds (08), unadvertised transfer functions accepted (09), wrong set_tf_power error code (10), no inert error on inert CM surfaces (11)](reports/color-management-verification.md) | confirmed | none | none | none | Bundled: all eight concern `color-management-v1` request / preset handling (mostly `protocols/ColorManagement.cpp`; 05 also touches the preset definitions) and fit one PR; priced and claimed as one bundle. |
 | [CM-12 ICC description replacement omits change notifications](reports/color-management-verification.md) | confirmed | none | none | none |  |
 
 ### CM — shaders and transfer functions
