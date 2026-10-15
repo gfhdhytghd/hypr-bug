@@ -6,8 +6,14 @@ two by the orchestrating agent; **none of these findings have been reproduced/ve
 yet** (unlike the color-management dossier in `reports/`). Treat every claim as
 machine-generated until a repro client or a nested-session crash confirms it.
 
-- Total: 52 findings across 7 dossiers.
+- Total: 63 findings across 8 dossiers.
 - Highest-priority candidates to verify first (reachability × impact):
+  0. **F-XW2-01** — Hyprland chmods the X11 socket to 0666 and starts Xwayland **without
+     `-auth`**; the comment claims an xhost ACL, but no authority file is passed. If the
+     default Xserver policy does not reject foreign peers, **any local user** can connect
+     to the session's DISPLAY → XRecord keylogging, XTEST injection, clipboard theft.
+     Minimal test + downgrade condition recorded in `08-xwayland-chains.md`
+     (blocked on a host with a GPU; nested run impossible here — no `/dev/dri`).
   1. **F-PR2-01 / F-PR2-04** — virtual-keyboard keymap `mmap` without `fstat`, and
      wl_shm pool `ftruncate`-after-create → SIGBUS crash of the compositor from any
      client. Trivially reproducible clients expected.
@@ -36,6 +42,7 @@ machine-generated until a repro client or a nested-session crash confirms it.
 | `05-xwayland.md` | XWayland property parsing | 1 (F-XW-01) | format-confusion heap OOB read |
 | `06-protocols-shell.md` | xdg / layer-shell / compositor core | 10 (F-PROTO-01..10) | +1 suspected bug (Subcompositor.cpp:147) |
 | `07-protocols-misc.md` | screencopy/shm/IME/dmabuf/lease/gamma/lock | 10 (F-PR2-01..10) | several lock-screen-gating gaps |
+| `08-xwayland-chains.md` | XWayland/X11 chains (launch socket, props, selection, DnD, lock, spoof) | 11 (F-XW2-01..11) | F-XW2-01 cross-user DISPLAY pending GPU-host test; lockscreen: xwayland/ has zero sessionLock checks |
 
 ## Status tracking
 

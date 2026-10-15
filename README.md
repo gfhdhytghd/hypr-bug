@@ -16,7 +16,7 @@ dossier states its own verification level per finding.
 | # | Area | Summary | Status | Reports | Repro clients |
 |---|------|---------|--------|---------|---------------|
 | 1 | HDR / color management (`cm/tonemap-ref-scaling`) | 29-item audit of `color-management-v1` handling; 2 High always-crash protocol bugs | verified (nested-session crashes observed); no upstream fix yet | [overall table](reports/color-management-verification.md) | [cm-feedback-inert](repro/cm-feedback-inert/) · [cm-failed-desc](repro/cm-failed-desc/) |
-| 2 | Full-codebase sweep @ `397cb0efb` — fork CM/HDR, IPC/hyprctl, hyprpm, config/Lua/ICC, XWayland, xdg/layer-shell, misc protocols | 52 findings across 7 dossiers; top class: SIGBUS any-client crashes, IPC Lua `eval`/`dispatch` injection (fork regression), X11 format-confusion heap OOB read, popup UAF / self-parent freeze, hyprpm `sh -c` injection + sudo path traversal | **static analysis only — none reproduced yet** | [batch index](pending-evaluation/2026-10-full-audit/README.md) | — |
+| 2 | Full-codebase sweep @ `397cb0efb` — fork CM/HDR, IPC/hyprctl, hyprpm, config/Lua/ICC, XWayland (×2: props + chains), xdg/layer-shell, misc protocols | 63 findings across 8 dossiers; top: X11 socket 0666 w/o `-auth` (cross-user keylog/inject, needs live-session confirmation), SIGBUS any-client crashes, IPC Lua eval/dispatch injection, X property format-confusion OOB reads, popup UAF/freeze | **static analysis only — none reproduced yet** | [batch index](pending-evaluation/2026-10-full-audit/README.md) | — |
 
 Raw agent output awaiting triage (pre-verification snapshots) is parked in
 [`pending-evaluation/`](pending-evaluation/).
