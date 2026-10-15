@@ -37,9 +37,9 @@ Raw agent output awaiting triage (pre-verification snapshots) is parked in
 
 ## Issue list
 
-Both confirmation columns support `none` (default / not yet validated), `yes` (confirmed), and `rejected` (reviewed and rejected). A real bug that was subsequently fixed retains its confirmation status; `rejected` is for a rejected diagnosis, not a resolved bug. PR status is `none` (default), `PRed` (a matching upstream PR has been submitted but not merged), or `accepted` (the matching fix has been merged upstream). A Discussion, feature request, or local fork fix alone does not change PR status.
+Both confirmation columns support `none` (default / not yet validated), `confirmed` (confirmed), and `rejected` (reviewed and rejected). A real bug that was subsequently fixed retains its confirmation status; `rejected` is for a rejected diagnosis, not a resolved bug. PR status is `none` (default), `PRed` (a matching upstream PR has been submitted but not merged), or `accepted` (the matching fix has been merged upstream). A Discussion, feature request, or local fork fix alone does not change PR status.
 
-`Agent confirmed = yes` means the linked report contains independent source/specification, numeric, or runtime confirmation **at its pinned revision**. It does not imply current-version reproduction or physical-display acceptance. A manual `yes` or `rejected` requires an explicit human validation record for this tracker; authorship, screenshots, or an agent-run test alone do not set that column, so it currently defaults to `none`.
+`Agent confirmed = confirmed` means the linked report contains independent source/specification, numeric, or runtime confirmation **at its pinned revision**. It does not imply current-version reproduction or physical-display acceptance. A manual `confirmed` or `rejected` requires an explicit human validation record for this tracker; authorship, screenshots, or an agent-run test alone do not set that column, so it currently defaults to `none`.
 
 The original CM list has 29 entries. HDR-COM-02 is folded into CM-18; HDR-COM-03 expands a previously unnumbered minor item. The 135 full-audit entries remain unverified candidates (`none`), including informational/control records; they are not 135 confirmed bugs. Community-only records remain in the [triage ledger](reports/community-hdr-triage.json).
 
@@ -51,50 +51,50 @@ The **Notes** column is for bounty amounts and other details; it is blank by def
 
 | Issue | Agent confirmed | Manually confirmed | PR status | Claim status | Notes |
 |---|---|---|---|---|---|
-| [CM-01 Feedback survives surface destruction and later crashes the compositor](repro/cm-feedback-inert/REPORT.md) | yes | none | none | none |  |
-| [CM-02 Failed image descriptions remain usable and cause null dereferences](repro/cm-failed-desc/REPORT.md) | yes | none | none | none |  |
-| [CM-03 Image-description changes are applied before the surface commit](reports/color-management-verification.md) | yes | none | none | none |  |
-| [CM-04 PQ luminance range does not follow the min + 10000 rule](reports/color-management-verification.md) | yes | none | none | none |  |
-| [CM-05 Windows BT.2100 / scRGB preset luminances are incomplete](reports/color-management-verification.md) | yes | none | none | none |  |
-| [CM-06 Incomplete parametric image descriptions are accepted](reports/color-management-verification.md) | yes | none | none | none |  |
-| [CM-07 MaxFALL / MaxCLL constraints are not validated](reports/color-management-verification.md) | yes | none | none | none |  |
-| [CM-08 Invalid mastering-luminance bounds are accepted](reports/color-management-verification.md) | yes | none | none | none |  |
-| [CM-09 Unadvertised transfer functions are accepted](reports/color-management-verification.md) | yes | none | none | none |  |
-| [CM-10 set_tf_power returns the wrong interface error code](reports/color-management-verification.md) | yes | none | none | none |  |
-| [CM-11 Inert color-management surfaces do not raise the inert error](reports/color-management-verification.md) | yes | none | none | none |  |
-| [CM-12 ICC description replacement omits change notifications](reports/color-management-verification.md) | yes | none | none | none |  |
+| [CM-01 Feedback survives surface destruction and later crashes the compositor](repro/cm-feedback-inert/REPORT.md) | confirmed | none | none | none |  |
+| [CM-02 Failed image descriptions remain usable and cause null dereferences](repro/cm-failed-desc/REPORT.md) | confirmed | none | none | none |  |
+| [CM-03 Image-description changes are applied before the surface commit](reports/color-management-verification.md) | confirmed | none | none | none |  |
+| [CM-04 PQ luminance range does not follow the min + 10000 rule](reports/color-management-verification.md) | confirmed | none | none | none |  |
+| [CM-05 Windows BT.2100 / scRGB preset luminances are incomplete](reports/color-management-verification.md) | confirmed | none | none | none |  |
+| [CM-06 Incomplete parametric image descriptions are accepted](reports/color-management-verification.md) | confirmed | none | none | none |  |
+| [CM-07 MaxFALL / MaxCLL constraints are not validated](reports/color-management-verification.md) | confirmed | none | none | none |  |
+| [CM-08 Invalid mastering-luminance bounds are accepted](reports/color-management-verification.md) | confirmed | none | none | none |  |
+| [CM-09 Unadvertised transfer functions are accepted](reports/color-management-verification.md) | confirmed | none | none | none |  |
+| [CM-10 set_tf_power returns the wrong interface error code](reports/color-management-verification.md) | confirmed | none | none | none |  |
+| [CM-11 Inert color-management surfaces do not raise the inert error](reports/color-management-verification.md) | confirmed | none | none | none |  |
+| [CM-12 ICC description replacement omits change notifications](reports/color-management-verification.md) | confirmed | none | none | none |  |
 
 ### CM — shaders and transfer functions
 
 | Issue | Agent confirmed | Manually confirmed | PR status | Claim status | Notes |
 |---|---|---|---|---|---|
-| [CM-13 BT.1886 uses the inverse BT.709 curve instead of the display EOTF](reports/color-management-verification.md) | yes | none | none | none |  |
-| [CM-14 HLG decoding omits the OOTF / system gamma](reports/color-management-verification.md) | yes | none | none | none |  |
-| [CM-15 Tonemapping clips negative FP16 wide-gamut components](reports/color-management-verification.md) | yes | none | none | none |  |
-| [CM-16 Generic-film primaries are in the wrong channel order](reports/color-management-verification.md) | yes | none | none | none |  |
-| [CM-17 CIE XYZ primaries can produce singular conversion matrices](reports/color-management-verification.md) | yes | none | none | none |  |
-| [CM-18 Client minimum luminance is ignored; parametric EXT_LINEAR encoding range is ignored](reports/community-hdr-validation.md) | yes | none | none | none |  |
+| [CM-13 BT.1886 uses the inverse BT.709 curve instead of the display EOTF](reports/color-management-verification.md) | confirmed | none | none | none |  |
+| [CM-14 HLG decoding omits the OOTF / system gamma](reports/color-management-verification.md) | confirmed | none | none | none |  |
+| [CM-15 Tonemapping clips negative FP16 wide-gamut components](reports/color-management-verification.md) | confirmed | none | none | none |  |
+| [CM-16 Generic-film primaries are in the wrong channel order](reports/color-management-verification.md) | confirmed | none | none | none |  |
+| [CM-17 CIE XYZ primaries can produce singular conversion matrices](reports/color-management-verification.md) | confirmed | none | none | none |  |
+| [CM-18 Client minimum luminance is ignored; parametric EXT_LINEAR encoding range is ignored](reports/community-hdr-validation.md) | confirmed | none | none | none |  |
 
 ### CM — rendering pipeline
 
 | Issue | Agent confirmed | Manually confirmed | PR status | Claim status | Notes |
 |---|---|---|---|---|---|
-| [CM-19 HLG passthrough lacks HDR metadata](reports/color-management-verification.md) | yes | none | none | none |  |
-| [CM-20 Forced HDR without usable luminance data falls back to an 80-nit peak](reports/color-management-verification.md) | yes | none | none | none |  |
-| [CM-21 HDR mirroring uses an sRGB intermediate and loses HDR range](reports/color-management-verification.md) | yes | none | none | none |  |
-| [CM-22 HDR passthrough does not fully check source/output compatibility](reports/color-management-verification.md) | yes | none | none | none |  |
-| [CM-23 HDR metadata uses container primaries and substitutes unknown light levels](reports/color-management-verification.md) | yes | none | none | none |  |
-| [CM-24 FP16 affects capture brightness on work-buffer / mirror paths](reports/color-management-verification.md) | yes | none | none | none |  |
-| [CM-25 FP16 blur omits SDR brightness / saturation adjustments](reports/color-management-verification.md) | yes | none | none | none |  |
-| [CM-26 Auto-HDR exit can mismatch content and mode or wait for further damage](reports/color-management-verification.md) | yes | none | none | none |  |
+| [CM-19 HLG passthrough lacks HDR metadata](reports/color-management-verification.md) | confirmed | none | none | none |  |
+| [CM-20 Forced HDR without usable luminance data falls back to an 80-nit peak](reports/color-management-verification.md) | confirmed | none | none | none |  |
+| [CM-21 HDR mirroring uses an sRGB intermediate and loses HDR range](reports/color-management-verification.md) | confirmed | none | none | none |  |
+| [CM-22 HDR passthrough does not fully check source/output compatibility](reports/color-management-verification.md) | confirmed | none | none | none |  |
+| [CM-23 HDR metadata uses container primaries and substitutes unknown light levels](reports/color-management-verification.md) | confirmed | none | none | none |  |
+| [CM-24 FP16 affects capture brightness on work-buffer / mirror paths](reports/color-management-verification.md) | confirmed | none | none | none |  |
+| [CM-25 FP16 blur omits SDR brightness / saturation adjustments](reports/color-management-verification.md) | confirmed | none | none | none |  |
+| [CM-26 Auto-HDR exit can mismatch content and mode or wait for further damage](reports/color-management-verification.md) | confirmed | none | none | none |  |
 
 ### CM — reference white and tonemapping
 
 | Issue | Agent confirmed | Manually confirmed | PR status | Claim status | Notes |
 |---|---|---|---|---|---|
-| [CM-27 Tonemap peak reference scaling disagrees with absolute-nit pixels](reports/color-management-verification.md) | yes | none | [PRed](https://github.com/hyprwm/Hyprland/pull/16529) | none |  |
-| [CM-28 Reference white is not anchored across image descriptions](reports/color-management-verification.md) | yes | none | none | none |  |
-| [CM-29 Output reference white is hardcoded to 203 nit](reports/color-management-verification.md) | yes | none | none | none |  |
+| [CM-27 Tonemap peak reference scaling disagrees with absolute-nit pixels](reports/color-management-verification.md) | confirmed | none | [PRed](https://github.com/hyprwm/Hyprland/pull/16529) | none |  |
+| [CM-28 Reference white is not anchored across image descriptions](reports/color-management-verification.md) | confirmed | none | none | none |  |
+| [CM-29 Output reference white is hardcoded to 203 nit](reports/color-management-verification.md) | confirmed | none | none | none |  |
 
 CM-18, CM-24, and CM-26 use the corrected, narrower findings from the verification report. CM-27’s PR #16529 is closed without merging; it remains `PRed` within the three requested PR states.
 
@@ -102,8 +102,8 @@ CM-18, CM-24, and CM-26 use the corrected, narrower findings from the verificati
 
 | Issue | Agent confirmed | Manually confirmed | PR status | Claim status | Notes |
 |---|---|---|---|---|---|
-| [HDR-COM-01 CPU-copy hardware cursor bypasses output color management](reports/community-hdr-validation.md) | yes | none | none | none |  |
-| [HDR-COM-03 SDR brightness / saturation applied after PQ encoding](reports/community-hdr-validation.md) | yes | none | none | none |  |
+| [HDR-COM-01 CPU-copy hardware cursor bypasses output color management](reports/community-hdr-validation.md) | confirmed | none | none | none |  |
+| [HDR-COM-03 SDR brightness / saturation applied after PQ encoding](reports/community-hdr-validation.md) | confirmed | none | none | none |  |
 
 ### CM — known implementation limitations
 
@@ -111,8 +111,8 @@ These are confirmed restrictions or explicit policies, tracked separately from d
 
 | Issue | Agent confirmed | Manually confirmed | PR status | Claim status | Notes |
 |---|---|---|---|---|---|
-| [HDR-LIM-01 Capture targets remain sRGB without HDR / wide-gamut negotiation](reports/community-hdr-validation.md) | yes | none | none | none |  |
-| [HDR-LIM-02 Incompatible direct scanout allowed by non_shader_cm=ignore](reports/community-hdr-validation.md) | yes | none | none | none |  |
+| [HDR-LIM-01 Capture targets remain sRGB without HDR / wide-gamut negotiation](reports/community-hdr-validation.md) | confirmed | none | none | none |  |
+| [HDR-LIM-02 Incompatible direct scanout allowed by non_shader_cm=ignore](reports/community-hdr-validation.md) | confirmed | none | none | none |  |
 
 ### CM — rejected diagnoses
 
