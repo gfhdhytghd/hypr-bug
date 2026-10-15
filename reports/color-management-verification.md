@@ -5,6 +5,8 @@
 - Note: the HEAD `b2586b63b` recorded in the audit doc (hyprland-hdr-cm-audit.md) does not exist in the local repo (the branch appears to have been rebased after the audit). All line numbers in this report were re-checked against the current tip.
 - All verification was read-only; no repository files were modified.
 
+> 2026-10-15 follow-up: [community validation](community-hdr-validation.md) uses a **different, newer official baseline** (`e2ad066c9`) and compares the local fork (`3d52e94fd`). It adds a CPU-copy cursor finding, narrows old #18 to a reproducible parametric EXT_LINEAR subcase, and supplies an executed shader counterexample for the original post-encoding SDR-adjustment minor item. Do not interpret the historical table below as the current fork's unfixed backlog. Pending community symptoms and implementation limitations are excluded from the new confirmed-defect count.
+
 ## Full verification table (29 findings)
 
 | # | Original status | Verdict | Notes (line corrections / fixes) |

@@ -1,0 +1,33 @@
+{
+  "documented_upstream_pin": "e2ad066c9ffd45ddfbe4dc76d2de16b382fbe3eb",
+  "source_sha256": {
+    "src/render/shaders/glsl/cm_helpers.glsl": "b7838b83e1f4d47e329aff8eaa732591216da2f68bda106e3ab2574184020291",
+    "src/render/shaders/glsl/defines.h": "39d8734d5b4074267471ea802506d3679b263b76659bb49bd76134d68d33c675",
+    "src/render/shaders/glsl/constants.h": "40467a58a526d038313e2f9ffad940862599d2d90def5feffe1c7608b8f85d04",
+    "src/render/shaders/glsl/tonemap.glsl": "776c10dc702e5d80c3e1f07e505bd170b13d96042c9429ab32f4318be96b75c8",
+    "src/helpers/cm/ColorManagement.hpp": "b7742b05b3878c8ce96573063261b659413f2d36a6c24bdde3772d39a1eb9c97"
+  },
+  "renderer": "renderer=NVIDIA RTX PRO 6000 Blackwell Workstation Edition/PCIe/SSE2; version=OpenGL ES 3.2 NVIDIA 615.71.09",
+  "method": "actual upstream GLSL helper code executed in a standalone surfaceless GLES compute shader; no compositor/client/KMS integration",
+  "ext_linear": {
+    "signal": 0.0203,
+    "declared_max_nits": 10000,
+    "actual_source_range_max": 80,
+    "observed_nits": 1.62400007,
+    "expected_nits": 203
+  },
+  "controls": {
+    "custom_range_10000_nits": 203.000015,
+    "windows_scrgb_signal_1_range_80_nits": 80
+  },
+  "pq_brightness": {
+    "baseline_nits": 80,
+    "multiplier": 1.5,
+    "baseline_pq": 0.485857099,
+    "observed_pq": 0.728785634,
+    "observed_decoded_nits": 809.320496,
+    "linear_brightness_expected_nits": 120
+  },
+  "physical_hdr_acceptance": "NOT TESTED",
+  "fork_corrections": "source inspected separately; this harness does not execute the fork"
+}
