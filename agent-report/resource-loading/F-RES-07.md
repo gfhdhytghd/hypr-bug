@@ -6,6 +6,8 @@
 
 - Empirical: Empirically reproduced: nested compositor SIGBUS (status 135) in the cursor-role SHM read path after the backing file was truncated before flush.
 
+- Reproduction artifact (nested-harness crash client): [`fres-07-cursor-shm-sigbus`](_assets/fres-07-cursor-shm-sigbus).
+
 ## Agent report
 
 Area: Resource loading. Baseline: official Hyprland `main` at `e2ad066c9`.

@@ -6,6 +6,8 @@
 
 - Empirical: Empirically reproduced: nested compositor SIGABRT (status 134) after an xdg_popup grab on a destroyed content surface; also crashed the real XPS session (SIGABRT, watchdog respawn).
 
+- Reproduction artifact (nested-harness crash client): [`fproto02-popup-grab-uaf`](_assets/fproto02-popup-grab-uaf).
+
 ## Agent report
 
 Area: Shell / surface protocols. Baseline: official Hyprland `main` at `e2ad066c9`.
