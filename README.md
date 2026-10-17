@@ -33,6 +33,7 @@ under `human-confirmed/`.
 | 2 | Full-codebase sweep @ `397cb0efb` — 15 areas: fork CM/HDR, IPC/hyprctl, hyprpm, config/Lua/ICC, XWayland ×2, xdg/layer-shell, misc protocols, seat/clipboard/DnD, desktop lifecycle, resource loading, boot/crash chain, input/keybinds, permission dialogs, event-loop timers | **135 findings / 15 dossiers**; top: virtual-keyboard → exec-keybind **RCE from any Wayland client** (F-INP-01), clipboard/DnD missing serial+focus checks, X11 socket 0666 w/o `-auth` (cross-user, pending live test), SIGBUS crashes (shm/vkbd keymap), IPC Lua eval/dispatch injection, permission-system fail-open paths | **static analysis only — none reproduced yet** | [batch index](pending-evaluation/2026-10-full-audit/README.md) | — |
 | 3 | Community HDR/CM validation @ official `e2ad066c9` vs local fork `3d52e94fd` | **3 confirmed mechanisms: 1 new CPU-copy cursor defect, 2 extensions of existing findings**, plus addendum HDR-COM-04 (SDR presets advertise EDID HDR headroom, PR #16525); 2 implementation limitations recorded separately; 184 community records triaged | source-confirmed; 2 shader counterexamples executed in isolated EGL; physical HDR acceptance open; fork already contains corrective source for 2 findings | [validation and exclusions](agent-report/color-management/_evidence/community-hdr-validation.md) · [per-record ledger](agent-report/color-management/_evidence/community-hdr-triage.json) | [shader numerics](agent-report/color-management/_assets/hdr-community-numerics/) |
 | 4 | Side findings while fixing the fork @ official `e2ad066c9` vs fork `bd598253a` | **8 upstream defects + 1 correction**: orphaned-subsurface `get_subsurface` **SIGSEGV from any client** (SIDE-01), wrong top-level/position for subsurface nesting ≥ 3, stale hardware cursor after output CM changes, cursor-surface image description ignored, CPU cursor stride; F-SEAT-11 flip-order correction | SIDE-01..03 executed against upstream `Subcompositor.cpp` (SIGSEGV / wrong values observed); SIDE-04..06 source-confirmed; fork fixes all six | [side findings](agent-report/surface-protocols/_evidence/fork-fix-side-findings.md) | [subsurface-orphan-parent](agent-report/surface-protocols/_assets/subsurface-orphan-parent/) |
+| 5 | Upstream render + CM review @ official `25f09b26f` vs fork `e5a03b6a5` | **14 new defects + 1 informational record**: popups of unfocused tiled windows skipped (REV-10), GLSL `saturate()` uses green-primary luma weights (REV-01), default tonemap halves reference white (REV-02), first DS HDR frame carries wrong metadata (REV-08), ICC loader leak / D50-adapted primaries (REV-06), shader-failure leaks cached forever (REV-13) | source-confirmed only; fork already fixes REV-01..05, fixes for the rest in progress | [batch overview](agent-report/render/_evidence/upstream-review-2026-10-17.md) | — |
 
 Raw agent output awaiting triage (pre-verification snapshots) is parked in
 [`pending-evaluation/`](pending-evaluation/).
@@ -111,6 +112,20 @@ CM-18, CM-24, and CM-26 use the corrected, narrower findings from the verificati
 | [SIDE-05 Cursor surface image description ignored by software and GPU hardware cursors](agent-report/color-management/SIDE-05.md) | confirmed | none | none | none |  |
 | [SIDE-07 Interned image descriptions / primaries are never freed and looked up linearly (client-driven memory / CPU growth)](agent-report/color-management/SIDE-07.md) | confirmed | none | none | none | Upstream half of fork dossier F-CM-01/07. |
 | [SIDE-08 get_preferred on an orphaned subsurface crashes in t1Parent](agent-report/color-management/SIDE-08.md) | confirmed | none | none | none | Upstream half of fork dossier F-CM-06; same crash site as SIDE-01. |
+
+### CM — upstream review 2026-10-17
+
+| Issue | Agent confirmed | Manually confirmed | PR status | Claim status | Notes |
+|---|---|---|---|---|---|
+| [REV-01 GLSL saturate() uses the green primary's XYZ as luminance weights](agent-report/color-management/REV-01.md) | confirmed | none | none | none | Fork fixed. |
+| [REV-02 Default tonemap curve compresses reference white (no knee)](agent-report/color-management/REV-02.md) | confirmed | none | none | none | Fork fixed (BT.2390 EETF). |
+| [REV-03 Tonemapping is applied to premultiplied-alpha colour](agent-report/color-management/REV-03.md) | confirmed | none | none | none | Fork fixed. |
+| [REV-04 Image-description reference objects resolve to the wrong type](agent-report/color-management/REV-04.md) | confirmed | none | none | none | Fork fixed. |
+| [REV-05 Protocol bookkeeping: v1-only preferred_changed sent to v2, stale preferred id, uninitialised member](agent-report/color-management/REV-05.md) | confirmed | none | none | none | Fork fixed. |
+| [REV-06 ICC loader leaks the XYZ profile and adapts primaries toward D50](agent-report/color-management/REV-06.md) | confirmed | none | none | none |  |
+| [REV-07 ICC image descriptions never compare equal, so every reload rebuilds the 3D LUT](agent-report/color-management/REV-07.md) | confirmed | none | none | none | Fork partial: no leak, LUT still rebuilt. |
+| [REV-08 First direct-scanout HDR frame carries the composited metadata](agent-report/color-management/REV-08.md) | confirmed | none | none | none | Related to CM-26. |
+| [REV-09 Tonemap shader inverts a uniform matrix per fragment; dead srcRefLuminance](agent-report/color-management/REV-09.md) | confirmed | none | none | none |  |
 
 ### CM — known implementation limitations
 
@@ -334,6 +349,17 @@ These diagnoses were withdrawn by their reporters and are retained for traceabil
 | Issue | Agent confirmed | Manually confirmed | PR status | Notes |
 |---|---|---|---|---|
 | [F-TMR-01 Screenshare stop timer is not unregistered](agent-report/eventloop-timers/F-TMR-01.md) | rejected | none | none | Ownerless timers are skipped and garbage-collected; session destruction cannot produce the claimed permanent timer leak or late callback. |
+
+### Renderer — upstream review 2026-10-17
+
+| Issue | Agent confirmed | Manually confirmed | PR status | Notes |
+|---|---|---|---|---|
+| [REV-10 Popups of unfocused non-floating windows are skipped by the popup pass](agent-report/render/REV-10.md) | confirmed | none | none | Runtime reproduction pending; masked when focus follows the mouse. |
+| [REV-11 Per-monitor render state kept in function-local statics](agent-report/render/REV-11.md) | confirmed | none | none |  |
+| [REV-12 Input-region debug overlay draws the whole monitor](agent-report/render/REV-12.md) | confirmed | none | none | Debug overlay only. |
+| [REV-13 Shader compile/link failures leak GL objects and are cached forever](agent-report/render/REV-13.md) | confirmed | none | none |  |
+| [REV-14 Missing EGL native-fence procs abort the compositor](agent-report/render/REV-14.md) | confirmed | none | none |  |
+| [REV-15 Informational: renderer architecture and performance observations](agent-report/render/REV-15.md) | none | none | none | Informational, not a defect. |
 
 ## Repository structure and contribution requirements
 
