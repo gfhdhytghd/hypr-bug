@@ -122,10 +122,11 @@ CM-18, CM-24, and CM-26 use the corrected, narrower findings from the verificati
 | [REV-03 Tonemapping is applied to premultiplied-alpha colour](agent-report/color-management/REV-03.md) | confirmed | none | none | none | Fork fixed. |
 | [REV-04 Image-description reference objects resolve to the wrong type](agent-report/color-management/REV-04.md) | confirmed | none | none | none | Fork fixed. |
 | [REV-05 Protocol bookkeeping: v1-only preferred_changed sent to v2, stale preferred id, uninitialised member](agent-report/color-management/REV-05.md) | confirmed | none | none | none | Fork fixed. |
-| [REV-06 ICC loader leaks the XYZ profile and adapts primaries toward D50](agent-report/color-management/REV-06.md) | confirmed | none | none | none | Fork fix `a2b1a8bb0` (`fix/rev-icc`, unmerged). |
-| [REV-07 ICC image descriptions never compare equal, so every reload rebuilds the 3D LUT](agent-report/color-management/REV-07.md) | confirmed | none | none | none | Fork had partial fix; full fix `a2b1a8bb0` (`fix/rev-icc`, unmerged). |
-| [REV-08 First direct-scanout HDR frame carries the composited metadata](agent-report/color-management/REV-08.md) | confirmed | none | none | none | Related to CM-26. Fork fix `a6d9d876d` (`fix/rev-ds-tonemap`, unmerged). |
-| [REV-09 Tonemap shader inverts a uniform matrix per fragment; dead srcRefLuminance](agent-report/color-management/REV-09.md) | confirmed | none | none | none | Fork fix `a6d9d876d` (`fix/rev-ds-tonemap`, unmerged). |
+| [REV-06 ICC loader leaks the XYZ profile and adapts primaries toward D50](agent-report/color-management/REV-06.md) | confirmed | none | none | none | Fork fix `a2b1a8bb0` (`fix/rev-icc`, merged into fork `main` `e38076ac9`). |
+| [REV-07 ICC image descriptions never compare equal, so every reload rebuilds the 3D LUT](agent-report/color-management/REV-07.md) | confirmed | none | none | none | Fork had partial fix; full fix `a2b1a8bb0` (`fix/rev-icc`, merged into fork `main` `e38076ac9`). |
+| [REV-08 First direct-scanout HDR frame carries the composited metadata](agent-report/color-management/REV-08.md) | confirmed | none | none | none | Related to CM-26. Fork fix `a6d9d876d` (merged into fork `main` `e38076ac9`); XPS eDP PQ panel: KMS `HDR_OUTPUT_METADATA` matches the surface on every DS entry/exit, see [XPS validation](agent-report/color-management/_evidence/xps-hw-validation-2026-10-17.md). |
+| [REV-09 Tonemap shader inverts a uniform matrix per fragment; dead srcRefLuminance](agent-report/color-management/REV-09.md) | confirmed | none | none | none | Fork fix `a6d9d876d` (`fix/rev-ds-tonemap`, merged into fork `main` `e38076ac9`). |
+| [XPS-01 Strict v1 CLL/FALL validation kills Mesa Vulkan WSI clients (`set_max_fall(0)`)](agent-report/color-management/XPS-01.md) | confirmed | none | none | none | Fork-only (`dcc8b1da1`); spec-compliant, Mesa sends 0 for "unknown". Every Mesa-Vulkan HDR client (mpv gpu-next/vulkan) is disconnected. Needs a policy decision. |
 
 ### CM — known implementation limitations
 
@@ -354,11 +355,11 @@ These diagnoses were withdrawn by their reporters and are retained for traceabil
 
 | Issue | Agent confirmed | Manually confirmed | PR status | Notes |
 |---|---|---|---|---|
-| [REV-10 Popups of unfocused non-floating windows are skipped by the popup pass](agent-report/render/REV-10.md) | confirmed | none | none | Runtime reproduction pending; masked when focus follows the mouse. Fork fix `d715d2248` (`fix/rev-render-pass`, unmerged). |
-| [REV-11 Per-monitor render state kept in function-local statics](agent-report/render/REV-11.md) | confirmed | none | none | Fork fix `d715d2248` (`fix/rev-render-pass`, unmerged). |
-| [REV-12 Input-region debug overlay draws the whole monitor](agent-report/render/REV-12.md) | confirmed | none | none | Debug overlay only. Fork fix `d715d2248` (`fix/rev-render-pass`, unmerged). |
-| [REV-13 Shader compile/link failures leak GL objects and are cached forever](agent-report/render/REV-13.md) | confirmed | none | none | Fork fix `f88654f0a` (`fix/rev-gl-robust`, unmerged). |
-| [REV-14 Missing EGL native-fence procs abort the compositor](agent-report/render/REV-14.md) | confirmed | none | none | Fork fix `f88654f0a` (`fix/rev-gl-robust`, unmerged). |
+| [REV-10 Popups of unfocused non-floating windows are skipped by the popup pass](agent-report/render/REV-10.md) | confirmed | none | none | Reproduced on XPS: hyprtester `tiledPopupsSurviveFocusChanges` fails with the old `w.reset()` (parent/popups 1/0/0), passes with the fix; masked when focus follows the mouse. Fork fix `d715d2248` (`fix/rev-render-pass`, merged into fork `main` `e38076ac9`). |
+| [REV-11 Per-monitor render state kept in function-local statics](agent-report/render/REV-11.md) | confirmed | none | none | Fork fix `d715d2248` (`fix/rev-render-pass`, merged into fork `main` `e38076ac9`). |
+| [REV-12 Input-region debug overlay draws the whole monitor](agent-report/render/REV-12.md) | confirmed | none | none | Debug overlay only. Fork fix `d715d2248` (`fix/rev-render-pass`, merged into fork `main` `e38076ac9`). |
+| [REV-13 Shader compile/link failures leak GL objects and are cached forever](agent-report/render/REV-13.md) | confirmed | none | none | Fork fix `f88654f0a` (`fix/rev-gl-robust`, merged into fork `main` `e38076ac9`). |
+| [REV-14 Missing EGL native-fence procs abort the compositor](agent-report/render/REV-14.md) | confirmed | none | none | Fork fix `f88654f0a` (`fix/rev-gl-robust`, merged into fork `main` `e38076ac9`). |
 | [REV-15 Informational: renderer architecture and performance observations](agent-report/render/REV-15.md) | none | none | none | Informational, not a defect. |
 
 ## Repository structure and contribution requirements
