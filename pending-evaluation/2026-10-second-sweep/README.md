@@ -15,3 +15,4 @@ follows the tracker's evaluation workflow.
 | `16-hooks-pluginapi.md` | plugin runtime API / HookSystem / EventBus | 10 (F-HOOK-01..10) | unload has no listener/decoration/promise ledger; unload ungated |
 | `18-layer-lifecycle.md` | layer-shell surface lifecycle / lockscreen / popups / exclusive zones | 8 (F-LAY-01..08) | namespace spoof -> above_lock locksurfing; ghost EXCLUSIVE keyboard hijack after monitor disconnect |
 | `21-standalone-protocols.md` | small standalone protocols + generated-wrapper destroy semantics | 1 informational + negative results | documents the hyprwayland single-fire teardown invariant |
+| `17-animation.md` | animation manager & view controllers & fadeouts | 7 (F-ANIM-01..07) | all upstream-inherited (zero diff vs origin/main); tick core verified safe |
