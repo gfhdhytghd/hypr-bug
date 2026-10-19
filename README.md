@@ -36,6 +36,7 @@ under `human-confirmed/`.
 | 5 | Upstream render + CM review @ official `25f09b26f` vs fork `e5a03b6a5` | **14 new defects + 1 informational record**: popups of unfocused tiled windows skipped (REV-10), GLSL `saturate()` uses green-primary luma weights (REV-01), default tonemap halves reference white (REV-02), first DS HDR frame carries wrong metadata (REV-08), ICC loader leak / D50-adapted primaries (REV-06), shader-failure leaks cached forever (REV-13) | source-confirmed only; fork already fixes REV-01..05, fixes for the rest in progress | [batch overview](agent-report/render/_evidence/upstream-review-2026-10-17.md) | — |
 
 | 6 | Second sweep @ fork `e38076ac9` — plugin API/HookSystem, animation, layer lifecycle, rule engines, output/power, standalone-protocol spot audit | **40 new findings + 1 informational / 6 dossiers**; flagship chains: unpermissioned `plugin unload` × missing unload ledgers (any IPC client kills sessions over honest plugins), layerrule namespace spoof -> `above_lock` lockscreen click-hijack, DPMS desync -> lockscreen `sendLocked` without painting, ghost EXCLUSIVE layer keyboard hijack after monitor hotunplug | **static analysis only — none reproduced yet** | [batch index](pending-evaluation/2026-10-second-sweep/README.md) | — |
+| 7 | Fork CM/HDR sweep @ fork `b0136905e` — shader math, CM protocol, render-intermediate descriptions, output/KMS, config/ICC | **13 defects** (CMS-01..13), all also upstream; top: CTM interop fallback skips shader CM so SDR goes out as PQ (CMS-13), stale PQ metadata after `supports_hdr=-1` (CMS-12), ICC LUT crushes shadows (CMS-03), `get_preferred` hands out ICC descriptions (CMS-02) | source-confirmed (2 numerically); fork fixes all but CMS-01 (`ab41322e6`..`57dc260a2`) | [sweep overview](agent-report/color-management/_evidence/fork-cm-sweep-2026-10-19.md) | — |
 
 Raw agent output awaiting triage (pre-verification snapshots) is parked in
 [`pending-evaluation/`](pending-evaluation/).
@@ -131,6 +132,26 @@ CM-18, CM-24, and CM-26 use the corrected, narrower findings from the verificati
 | [REV-08 First direct-scanout HDR frame carries the composited metadata](agent-report/color-management/REV-08.md) | confirmed | none | none | none | Related to CM-26. Fork fix `a6d9d876d` (merged into fork `main` `e38076ac9`); XPS eDP PQ panel: KMS `HDR_OUTPUT_METADATA` matches the surface on every DS entry/exit, see [XPS validation](agent-report/color-management/_evidence/xps-hw-validation-2026-10-17.md). |
 | [REV-09 Tonemap shader inverts a uniform matrix per fragment; dead srcRefLuminance](agent-report/color-management/REV-09.md) | confirmed | none | none | none | Fork fix `a6d9d876d` (`fix/rev-ds-tonemap`, merged into fork `main` `e38076ac9`). |
 | [XPS-01 Strict v1 CLL/FALL validation kills Mesa Vulkan WSI clients (`set_max_fall(0)`)](agent-report/color-management/XPS-01.md) | confirmed | none | none | none | Fork-only (`dcc8b1da1`); spec-compliant, Mesa sends 0 for "unknown". Every Mesa-Vulkan HDR client (mpv gpu-next/vulkan) is disconnected. Needs a policy decision. |
+
+### CM — fork sweep 2026-10-19
+
+Found by parallel Codex agents on fork `b0136905e` and re-verified against source; all present upstream at `12f242511`. See the [sweep overview](agent-report/color-management/_evidence/fork-cm-sweep-2026-10-19.md).
+
+| Issue | Agent confirmed | Manually confirmed | PR status | Claim status | Notes |
+|---|---|---|---|---|---|
+| [CMS-01 Synchronized subsurface image descriptions take effect before the parent commit](agent-report/color-management/CMS-01.md) | confirmed | none | none | none | Residual of CM-03; root cause is the missing sync-subsurface state cache. Not fixed in the fork. |
+| [CMS-02 get_preferred hands out the output's ICC description, which surfaces then decode as gamma 2.2](agent-report/color-management/CMS-02.md) | confirmed | none | none | none | Fork fix `57dc260a2` for surface feedback; output `get_image_description` still returns the ICC description. |
+| [CMS-03 ICC 3D LUT sampled uniformly in linear light crushes shadows](agent-report/color-management/CMS-03.md) | confirmed | none | none | none | Fork fix `ab41322e6`. |
+| [CMS-04 Soft ICC change or removal keeps the previous profile's VCGT](agent-report/color-management/CMS-04.md) | confirmed | none | none | none | Fork fix `db14ca3b7`. |
+| [CMS-05 Changing only sdr_eotf is ignored on reload](agent-report/color-management/CMS-05.md) | confirmed | none | none | none | Fork fix `db14ca3b7`. |
+| [CMS-06 Config reload never re-reads an unchanged ICC path or the VCGT setting](agent-report/color-management/CMS-06.md) | confirmed | none | none | none | Fork fix `db14ca3b7`. |
+| [CMS-07 Downscaled built-in wallpaper loses its encoding and can clip](agent-report/color-management/CMS-07.md) | confirmed | none | none | none | Fork fix `e04ff4074`. |
+| [CMS-08 Background clears never update the SDR mirror attachment](agent-report/color-management/CMS-08.md) | confirmed | none | none | none | Fork fix `e04ff4074`. |
+| [CMS-09 Clear colors (misc:background_color) are written unconverted into HDR / linear work buffers](agent-report/color-management/CMS-09.md) | confirmed | none | none | none | Fork fix `e04ff4074`. Found while verifying CMS-08. |
+| [CMS-10 Groupbar gradient textures are untagged and follow the SDR EOTF policy](agent-report/color-management/CMS-10.md) | confirmed | none | none | none | Fork fix `9171f2d62`. |
+| [CMS-11 Border gradients re-encode with gamma 2.2 what was decoded as piecewise sRGB](agent-report/color-management/CMS-11.md) | confirmed | none | none | none | Fork fix `9171f2d62`. |
+| [CMS-12 Withdrawing HDR support leaves PQ HDR_OUTPUT_METADATA over SDR pixels](agent-report/color-management/CMS-12.md) | confirmed | none | none | none | Fork fix `9736f2fe6`. |
+| [CMS-13 CTM interop fallback disables required shader CM](agent-report/color-management/CMS-13.md) | confirmed | none | none | none | Fork fix `5bcfb19b9`. |
 
 ### CM — known implementation limitations
 
