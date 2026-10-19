@@ -114,6 +114,8 @@ CM-18, CM-24, and CM-26 use the corrected, narrower findings from the verificati
 | [SIDE-05 Cursor surface image description ignored by software and GPU hardware cursors](agent-report/color-management/SIDE-05.md) | confirmed | none | none | none |  |
 | [SIDE-07 Interned image descriptions / primaries are never freed and looked up linearly (client-driven memory / CPU growth)](agent-report/color-management/SIDE-07.md) | confirmed | none | none | none | Upstream half of fork dossier F-CM-01/07. |
 | [SIDE-08 get_preferred on an orphaned subsurface crashes in t1Parent](agent-report/color-management/SIDE-08.md) | confirmed | none | none | none | Upstream half of fork dossier F-CM-06; same crash site as SIDE-01. |
+| [SIDE-09 Toggling blur off and on drops the precomputed blur's image description (tiled-window blur mis-converted)](agent-report/color-management/SIDE-09.md) | confirmed | none | none | none | Fork fix `6860bf7f3`. Possibly related to community #13918 / #13771 (unverified). |
+| [SIDE-10 Runtime render:fp16_sdr_tf change retags the cached blur and work buffers without invalidating them](agent-report/color-management/SIDE-10.md) | confirmed | none | none | none | Fork fix `b0136905e`. Found while auditing toggle paths for SIDE-09. |
 
 ### CM — upstream review 2026-10-17
 
