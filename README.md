@@ -152,6 +152,7 @@ Found by parallel Codex agents on fork `b0136905e` and re-verified against sourc
 | [CMS-11 Border gradients re-encode with gamma 2.2 what was decoded as piecewise sRGB](agent-report/color-management/CMS-11.md) | confirmed | none | none | none | Fork fix `9171f2d62`. |
 | [CMS-12 Withdrawing HDR support leaves PQ HDR_OUTPUT_METADATA over SDR pixels](agent-report/color-management/CMS-12.md) | confirmed | none | none | none | Fork fix `9736f2fe6`. |
 | [CMS-13 CTM interop fallback disables required shader CM](agent-report/color-management/CMS-13.md) | confirmed | none | none | none | Fork fix `5bcfb19b9`. |
+| [CMS-14 Stale HDR_OUTPUT_METADATA after a crash in HDR leaves the next (safe-mode) session overexposed](agent-report/color-management/CMS-14.md) | confirmed | none | none | none | User report. Upstream sends an EOTF=0 blob instead of clearing; fork regression from `a6d9d876d`. Fork fixes: aquamarine `4abfcab`, Hyprland `d0e4219aa`. |
 
 ### CM — known implementation limitations
 
